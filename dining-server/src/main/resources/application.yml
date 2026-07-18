@@ -1,0 +1,77 @@
+server:
+  port: 8080  # dev环境也是8080端口(因为激活之后会覆盖原本的端口,所以干脆dev和原本的一致) / test环境是8081端口 / pro环境是8082端口
+
+spring:
+  profiles:       # 利用 profiles功能 进行"动态配置切换"
+    active: dev   # 激活 dev开发环境配置
+
+  main:
+    allow-circular-references: true
+
+  datasource:
+    druid:
+      driver-class-name: ${Dining.datasource.driver-class-name}
+      url: jdbc:mysql://${Dining.datasource.host}:${Dining.datasource.port}/${Dining.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${Dining.datasource.username}
+      password: ${Dining.datasource.password}
+
+  # 在.yml上依旧是用引用符号替代,具体的值我们写在-dev.yml当中
+  # (属于"属性占位符"引用方式,引用其他配置文件的属性,好处:环境隔离、集中管理、避免了硬编码)
+  redis:
+    host: ${Dining.redis.host}
+    port: ${Dining.redis.port}
+    password: ${Dining.redis.password}
+    database: ${Dining.redis.database}
+
+  rabbitmq:
+    host: ${Dining.rabbitmq.host}
+    port: ${Dining.rabbitmq.port}
+    username: ${Dining.rabbitmq.username}
+    password: ${Dining.rabbitmq.password}
+    virtual-host: ${Dining.rabbitmq.virtual-host}
+    # 消息可靠性: 生产者确认机制
+    publisher-confirm-type: correlated  # 异步回调  (这里可能不生效,可能是springBoot版本低的原因导致不生效)
+    publisher-returns: true   # 开启publisher-returns功能
+    template:
+      mandatory: true   # 定义消息路由失败时的策略。 true:则调用 ReturnCallback; false:则直接丢弃消息
+
+
+mybatis:
+  # mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.aqinyo.entity
+  configuration:
+    # 开启驼峰命名
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      aqinyo:
+        mapper: debug
+        service: info
+        controller: info
+
+aqinyo:
+  jwt:
+    # Admin 商家端
+    admin-secret-key: aqinyoAdminSecretJWT  # 设置admin的jwt签名加密时使用的秘钥 (自定义)
+    admin-ttl: 7200000          # 这里设置JWT的token令牌有效期为2h
+    admin-token-name: token     # 设置前端传递过来的令牌名 (B端和C端的令牌名不要同名)
+
+    # User 用户端
+    user-secret-key: aqyinyoUserSecretJWT
+    user-ttl: 7200000
+    user-token-name: authentication
+
+  alioss:
+    endpoint: ${Dining.alioss.endpoint}
+    access-key-id: ${Dining.alioss.access-key-id}
+    access-key-secret: ${Dining.alioss.access-key-secret}
+    bucket-name: ${Dining.alioss.bucket-name}
+
+  wechat:
+    appid: ${Dining.wechat.appid}
+    secret: ${Dining.wechat.secret}
+
+

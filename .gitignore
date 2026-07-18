@@ -1,0 +1,26 @@
+# 该文件是过滤文件 / 是告诉 Git,不要上传的东西   如:IDEA 配置、编译垃圾文件...
+
+# Maven编译目录(**/ 代表所有子模块的target文件都忽略)
+**/target/
+
+# IDEA配置 (全局忽略所有模块的idea文件)
+.idea
+*.iml
+.vscode/
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.zip
+
+# 日志、缓存
+*.log
+.DS_Store
+
+*.class
+*Test.java
+**/test/
+
+# 这个必须得加 (涉及配置的"密码、密钥"等真实数据,不能推送到Git仓库)
+**/application-dev.yml
