@@ -24,11 +24,11 @@ import java.util.UUID;
 public class CommonController {
 
     @Autowired
-    private AliOssUtil aliOssUtil;  // 依赖注入 工具类对象
+    private AliOssUtil aliOssUtil;  // 依赖注入AliOssUtil工具类
 
     @PostMapping("/upload")
     @ApiOperation("文件上传")   // API描述
-    public Result<String> upload(MultipartFile file){   // MultipartFile用于接收"前端发来"要传上去的文件, (形参名 = 接口文档的参数名)
+    public Result<String> upload(MultipartFile file){ //因为前端是用 multipartFile形式 把二进制文件传给后端的,所以后端也用 MultipartFile类型的文件 接收"前端发来"要传上去的文件 (形参名 = 接口文档的参数名)
         log.info("文件上传: {}", file);
         try {
             /*   123点 均为了 "防止重名" 的操作   */
@@ -41,9 +41,9 @@ public class CommonController {
 
             /*   4.上传OSS并获OSS返回的URL(然后才赋值给uploadPath)  和  5.返回前端URL并落库   */
             // 4.获取OSS返回的文件请求路径
-            String uploadPath = aliOssUtil.upload(file.getBytes(), name);/* 调用aliOssUtil工具类的upload方法(带着配置的AccessKey信息,把图片上传给OSS)并获得OSS返回的URL */
-            // 5.然后后端拿到了第4点OSS返回给我们的公共访问URL(下载路径) --> 返回给前端,然后就根据这个请求路径URL能请求到图片了 --> 与此同时后端也把这个URL存入数据库的图片字段里
-            return Result.success(uploadPath);  /* 上述路线精简化: 前端 → 后端 → 阿里云 OSS → 后端 → 前端 → 最终存入数据库 */
+            String uploadPath = aliOssUtil.upload(file.getBytes(), name);/* 调用aliOssUtil工具类的upload方法(带着配置的AccessKey信息,把图片上传给OSS)并获得OSS返回的URL,与此同时后端也把这个URL存入数据库的图片字段里 */
+            // 5.然后后端拿到了第4点OSS返回给我们的公共访问URL(下载路径) --> 返回给前端,然后就根据这个请求路径URL能请求到图片了
+            return Result.success(uploadPath);  /* 上述路线精简化: 前端 → 后端 → 阿里云OSS → 后端(URL入库) → 前端 */
 
         } catch (IOException e) {
             log.error("文件上传失败: {}", e);

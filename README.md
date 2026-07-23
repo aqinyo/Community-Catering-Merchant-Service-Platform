@@ -17,7 +17,7 @@ Spring Boot、Spring MVC、MyBatis、Docker、Redis、RabbitMQ、JWT、阿里云
 分为三个子模块: dining-common（通用）、dining-model（DTO,实体类,VO）、dining-server（具体业务）
 
 #### 亮点与细节
-1. 规范开发、JWT鉴权、DTO/VO/实体数据隔离、mapper自动代理
+1. 规范开发、JWT鉴权、DTO/VO/实体数据隔离、mapper自动代理、RESTful接口规范
 2. 引入 Redis 优化热点数据缓存
 3. RabbitMQ 异步解耦与延迟消息
 4. 集成阿里云 OSS 图片云端存储

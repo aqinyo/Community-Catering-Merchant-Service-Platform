@@ -90,7 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     /*   分页查询   */
-    @Override             /* 实现的是接口什么方法,可以点左边的“接口”按钮 -->到接口查看,那边都一注释 */
+    @Override             // 实现的是接口什么方法,可以点左边的“接口”按钮 --> 到接口查看,那边都有注释
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());   // 分页查询都会用到 PageHelper(分页插件)
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);   //用到了employeeMapper接口的pageQuery分页查询方法

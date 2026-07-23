@@ -36,7 +36,7 @@ public class DishController {
     public Result<List<DishVO>> list(Long categoryId) {
 
         /*   这里用的是原始的手动式依赖注入的redis操作方法(这里偷懒了写在Controller层)  /  到 "套餐模块" 时用上 注解式操作redis 更加简洁了   */
-        // 构造redis中的key,规则:dish_分类id  -->  分类(key)下挂着该套餐对应的菜品(value)
+        // 构造redis中的key,规则: Dish(分类id)  -->  分类(key)下挂着该套餐对应的菜品(value)
         String key = "Dish (categoryId = " + categoryId + ")";
 
         // 查询redis中是否存在菜品数据

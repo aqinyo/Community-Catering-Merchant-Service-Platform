@@ -63,13 +63,13 @@ public class TTLMessageConfig {
     }
     // 声明ttl队列
     @Bean
-    public org.springframework.amqp.core.Queue ttlQueue(){    /*  同时 "隐式绑定" 下面一层的 --> 死信交换机 + 设定key  */
+    public org.springframework.amqp.core.Queue ttlQueue(){    /*  同时 通过"设定死信路由key" 来 "隐式绑定" 下面一层的死信交换机   */
         return QueueBuilder
                 .durable(TTL_QUEUE_NAME)
                 .ttl(30*1000)   //指消息进入该queue的指定时间(即延迟时间)内没人消费,就变成死信-->进入dlx.queue死信队列(这就是延迟的流程)
-                .deadLetterExchange(DLX_EXCHANGE_NAME)   //隐式绑定-->死信交换机(并加上key)  (并且是给延迟队列ttl.queue加的死信属性噢~ 而不是加在dlx.queue)
-                .deadLetterRoutingKey(DLX_ROUTING_KEY)   //小插曲: 一开始2.1.8版本是不支持这种语法,我升级了SpringBoot版为2.3.12后才消掉爆红
-                .lazy()     // 声明为惰性队列   (写在延迟队列上的,因为有延迟,所以可能有大量堆积的消息)
+                .deadLetterExchange(DLX_EXCHANGE_NAME)   // 注意是给 延迟队列ttl.queue 加的死信属性噢~ 而不是加给 dlx.direct / dlx.queue
+                .deadLetterRoutingKey(DLX_ROUTING_KEY)   //隐式绑定 --> 死信交换机   (小插曲: 一开始2.1.8版本是不支持这种语法,我升级了SpringBoot版为2.3.12后才消掉爆红)
+                .lazy()     // 声明为惰性队列   (写在延迟队列上的,因为有TTL的延迟控制,所以可能会有大量消息堆积的情况)
                 .build();
     }
     // 绑定
