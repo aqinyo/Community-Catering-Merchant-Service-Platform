@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController     // @Controller + @ResponseBody
 @RequestMapping("/admin/employee")     //请求路径的前缀
 @Slf4j
-@Api(tags = "员工相关接口")
+@Api(tags = "员工相关接口")   /* 类级别: 接口分组标签   (@Api 和 @ApiOperation 都是Swagger的注解,是Swagger扫描时读取的"文档素材")           */
 public class EmployeeController {
 
     @Autowired
@@ -35,7 +35,7 @@ public class EmployeeController {
 
     /*  登录  */
     @PostMapping("/login")
-    @ApiOperation("员工登录")   //这个是对Api的描述
+    @ApiOperation("员工登录")   /* 方法级别: 接口描述 */
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 

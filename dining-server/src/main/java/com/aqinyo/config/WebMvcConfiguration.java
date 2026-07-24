@@ -57,39 +57,44 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
 
-    /*  通过knife4j生成接口文档  */
-    @Bean
-    public Docket adminDocket() { // B端 admin的
-        ApiInfo apiInfo = new ApiInfoBuilder()
+    /*  通过knife4j生成接口文档 (格式可参考复用)  */
+    @Bean   // B端 admin的
+    public Docket adminDocket() {   /*  Docket 是 springfox 的核心配置对象,代表 "一组接口文档"  */
+
+        ApiInfo apiInfo123 = new ApiInfoBuilder()  // ApiInfoBuilder 设置文档的 "标题、版本、描述" 等元信息
                 .title("商城外卖项目接口文档")
                 .version("2.0")
                 .description("通过knife4j框架来生成-->商城外卖项目接口文档")
                 .build();
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
-                .groupName("管理端接口")
-                .apiInfo(apiInfo)
+
+        Docket docket = new Docket(DocumentationType.SWAGGER_2) //指定使用 Swagger 2 规范
+                .groupName("管理端接口") //设置 文档分组名 (可以有多个Docket，所以这里给它起个名字)
+                .apiInfo(apiInfo123)    //设置 文档元信息(即把上面 ApiInfo的对象 设置到docket中)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.aqinyo.controller.admin"))
-                .paths(PathSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.aqinyo.controller.admin"))// 设置 只扫描这个包下的接口
+                .paths(PathSelectors.any())// 设置 该包下所有路径都纳入文档
                 .build();
+
         return docket;
     }
 
+    @Bean   // C端 user的
+    public Docket userDocket() {
 
-    @Bean
-    public Docket userDocket() {  // C端 user的
-        ApiInfo apiInfo = new ApiInfoBuilder()
+        ApiInfo apiInfo321 = new ApiInfoBuilder()
                 .title("商城外卖项目接口文档")
                 .version("2.0")
                 .description("通过knife4j框架来生成-->商城外卖项目接口文档")
                 .build();
+
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .groupName("用户端接口")
-                .apiInfo(apiInfo)
+                .apiInfo(apiInfo321)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.aqinyo.controller.user"))
                 .paths(PathSelectors.any())
                 .build();
+
         return docket;
     }
 
