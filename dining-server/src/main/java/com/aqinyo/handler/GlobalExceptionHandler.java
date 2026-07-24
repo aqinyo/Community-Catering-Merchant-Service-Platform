@@ -10,20 +10,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /*
-* 全局异常处理器,处理项目中抛出的业务异常
+* 全局异常处理器: 拦截项目中所有Controller层抛出的异常,统一处理后返回友好的错误信息给前端/即return Result.error("xxx的自定义提示"),避免直接暴露堆栈信息
 */
-@RestControllerAdvice
+@RestControllerAdvice //基于该注解实现
 @Slf4j
 public class GlobalExceptionHandler {
 
-    /*  捕获业务异常  */
+    /*  捕获全局的异常 (最核心！)  */
     @ExceptionHandler
     public Result exceptionHandler(BaseException ex){
         log.error("异常信息：{}", ex.getMessage());
-        return Result.error(ex.getMessage());
+        return Result.error(ex.getMessage()); //如上所述:返回友好的错误信息给前端
     }
 
-    /*  处理SQL异常 --> 当输入已经存在的username时执行的拦截  */
+
+    /*  处理SQL异常 (附带的异常捕获) --> 当输入已经存在的username时执行的拦截  */
     @ExceptionHandler
     public Result<String> exceptionHandler(SQLIntegrityConstraintViolationException e){
         String massage = e.getMessage();
