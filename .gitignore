@@ -23,6 +23,5 @@
 
 *.class
 
-
 # 这个必须得加 (涉及配置的"密码、密钥"等真实数据,不能推送到Git仓库)
 **/application-dev.yml
