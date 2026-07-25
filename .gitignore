@@ -3,6 +3,9 @@
 # Maven编译目录(**/ 代表所有子模块的target文件都忽略)
 **/target/
 
+# Gradle 编译输出目录
+**/build/
+
 # IDEA配置 (全局忽略所有模块的idea文件)
 .idea
 *.iml
@@ -19,8 +22,7 @@
 .DS_Store
 
 *.class
-*Test.java
-**/test/
+
 
 # 这个必须得加 (涉及配置的"密码、密钥"等真实数据,不能推送到Git仓库)
 **/application-dev.yml
