@@ -36,11 +36,12 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    // ==================== wxlogin 方法测试 ====================
+    // ================================= wxlogin()方法 单元测试 =================================
 
     @Test
     @DisplayName("微信登录 - 老用户直接返回")
     void wxlogin_existingUser() {
+        // 构造入参 (这里DTO只有Code一个属性)
         UserLoginDTO dto = new UserLoginDTO();
         dto.setCode("test_code");
 
@@ -122,4 +123,5 @@ class UserServiceImplTest {
             assertEquals(MessageConstant.LOGIN_FAILED, exception.getMessage());
         }
     }
+
 }

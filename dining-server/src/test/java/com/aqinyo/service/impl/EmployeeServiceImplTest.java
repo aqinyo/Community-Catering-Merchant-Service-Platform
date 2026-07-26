@@ -18,8 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;           // 【注解】启用 Mockito 扩展
 import org.mockito.ArgumentCaptor;                           // 【注解】参数捕获器
-import org.mockito.InjectMocks;                              // 【注解】创建被测类实例并注入 Mock 依赖
-import org.mockito.Mock;                                     // 【注解】创建 Mock 假对象
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;           // 【注解】Mockito 的 JUnit5 扩展
 import org.springframework.util.DigestUtils;
 
@@ -34,79 +34,79 @@ import static org.mockito.Mockito.*;                         // Mockito 核心�
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceImplTest {
 
-    /*   创建 Mock 假对象   */
+    /*   创建 Mock假对象     (给下面"被测对象"的实例进行依赖注入的,而且下面的实例对象需要依赖注入什么,就 @Mock 几个假对象  / @Mock 是为 @InjectMocks 服务的)  */
     @Mock
-    private EmployeeMapper employeeMapper;  // @Mock 创建一个 EmployeeMapper "假对象" ,这个假Mapper不会连接数据库，方法默认返回 null --> 然后我们用 when(...).thenReturn(...) 来控制它的返回值
+    private EmployeeMapper employeeMapper;  // @Mock: 创建一个 EmployeeMapper "假对象" ,这个假Mapper并不会去连接数据库,所以方法默认返回 null --> 然后我们用 when(...).thenReturn(...) 来控制它的返回值
+                                            // 并且针对的是:当前类（Service）所依赖的所有其他组件 (比如:Mapper/RabbitMQ/Redis等依赖),都会用 @Mock 假对象来替代
 
-
-    /*   创建 "被测对象" 的实例   */
+    /*   创建 "被测对象" 的实例      (被测对象原本需要依赖注入的所有类,都由上面 @Mock 的假对象来替代注入)  */
     @InjectMocks
-    private EmployeeServiceImpl employeeService;  // @InjectMocks 创建 EmployeeServiceImpl 实例,并自动把上面的 @Mock 假对象注入到它的 employeeMapper 字段中。等价于：new EmployeeServiceImpl()，但其内部的 employeeMapper 是我们的假对象
-    private Employee testEmployee;  // 测试用的员工实体对象（每个测试方法执行前都会重新创建）
+    private EmployeeServiceImpl employeeService;  // @InjectMocks: 创建 EmployeeServiceImpl 实例,并自动把 EmployeeServiceImpl 要依赖注入的所有类, 全部由@Mock假对象来替代"被依赖注入"到EmployeeServiceImpl中
+    private Employee testEmployee;
 
 
     /*  初始化 测试数据  */
     @BeforeEach    // 在每个@Test执行前,先执行一次 @BeforeEach 标注的方法  /  用途: 准备每个@Test都需要的公共数据,避免在每个@Test里重复写
     void setUp() {
-        testEmployee = Employee.builder()
-                .id(1L)
-                .username("admin")
+        testEmployee = Employee.builder()       //这些数据是自行设定的,不需要和真实数据库中的数据对应,伪造但合法,
+                .id(1L)                         //单元测试的核心原则是“隔离”,使用 @Mock 就不会真的去连接数据库执行 SQL,我们只测试 Service 层的业务逻辑,不依赖真实的数据库环境
+                .username("admin")              //因此,只要构造的假数据能够满足 Service 内部的逻辑要求即可 (同样,也只需构造"对象属性拷贝+手动赋值"的属性即可,其余的公共字段可以自动填充)
                 .name("管理员")
                 .phone("13800138000")
                 .sex("男")
                 .idNumber("440101199001011234")
                 .status(StatusConstant.ENABLE)
-                // 密码用 MD5 加密，模拟数据库中存储的密文
-                .password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()))
+                .password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes())) // 密码用 MD5 加密,模拟数据库中存储的密文
                 .build();
     }
 
 
 
-    /*   作为首个单元测试内容,做了详细的笔记,可以随时温故   */
     // ================================= login() 方法 单元测试 =================================
-
+    /*   作为首个单元测试内容,做了详细的笔记,可以随时温故(OrderServiceImplTest也可以辅助温故@Mock与@InjectMocks的关系)   */
     @Test
-    @DisplayName("登录成功 - 用户名密码正确且账号启用") // 给测试方法起个名,测试报告中会显示这个名字
+    @DisplayName("登录成功 - 用户名密码正确且账号启用") // 给测试方法起个名,控制台左侧的测试报告中会显示这个名字
     void login_success() {
 
-        // 准备输入参数
+        /*   Arrange（准备）   */
+        // 【构造入参】--> 与上面的"初始化测试数据"一样,自行构造测试所需的入参数据DTO,不需要和真实数据库中的数据对应,越简单直接越好
         EmployeeLoginDTO employeeLoginDTO = new EmployeeLoginDTO();
-        employeeLoginDTO.setUsername("admin");  // 单元测试的核心原则是: “隔离、针对性”,只关注被测方法本身的逻辑。因此不需要考虑解耦,直接“对症”构造该方法需要的入参即可，越简单直接越好
-        employeeLoginDTO.setPassword("123456");  // 明文密码,service 内部会做 MD5 加密再比对
+        employeeLoginDTO.setUsername("admin");  // 单元测试核心原则: “隔离、针对性”，对症构造入参
+        employeeLoginDTO.setPassword("123456");  // 明文密码, service 内部会做 MD5 加密再比对
 
-        // 【关键API】 因为这个假Mapper是隔离环境的,不会连接数据库,方法默认返回 null --> 所以使用 when().thenReturn() 来控制返回值
+        // 【使用when().thenReturn()控制返回值】--> Mock是假Mapper对象,用来是隔离环境的,它什么都不做的,所以默认返回 null/0; 使用此 when().thenReturn() 控制其返回:测试方法所需要的测试数据值
         when(employeeMapper.getByUsername("admin")).thenReturn(testEmployee);
 
-        /*  执行被测方法  (上下文的准备都是围绕这个方法)  */
+        /*   Act （执行）   */
+        // 【执行被测方法】-->(上下文的准备都是围绕这个方法)获取返回结果后以推进后续验证
         Employee result = employeeService.login(employeeLoginDTO);
 
-        // 【断言】验证返回值
-        assertNotNull(result);  // assertNotNull 即返回值不应为 null
-        assertEquals("admin", result.getUsername());    // 用户名应为 admin
+        /*   Assert（断言）  */
+        // 【断言】--> 验证返回值是否符合预期  (它是单元测试的灵魂,是检验标准:决定了业务逻辑到底是对是错,直接关系到开发的功能是否可靠)
+        assertNotNull(result);  // assertNotNull:返回值不应为 null ; 若预期返回值是 null,则应使用 assertNull
+        assertEquals("admin", result.getUsername());    // 用户名应为 admin (确保返回结果result.getUsername()的用户名 = 预期值 "admin")
         assertEquals("管理员", result.getName());        // 姓名应为 管理员
 
-        // 【关键API】 verify(mock, times(n)).method()
-        // verify() 是 Mockito 框架提供的核心API,专门用于验证 Mock假对象 的交互行为（即验证某个方法是否被调用、调用次数及参数）
-        verify(employeeMapper, times(1)).getByUsername("admin");  // 验证 Mock假对象(employeeMapper) 的交互行为(getByUsername方法)-->恰好被调用了1次,且参数是"admin"
+        // 【使用verify(mock,times(n)).method()验证交互行为】--> 验证 Mock假对象 的交互行为（即验证某个方法是否被调用、调用次数及参数）
+        verify(employeeMapper, times(1)).getByUsername("admin");  // 验证 Mock假对象(employeeMapper) 的交互行为(getByUsername方法) --> 恰好被调用了1次,且参数是"admin",测试才算通过
     }
 
     @Test
-    @DisplayName("登录失败 - 账号不存在")    // 给测试方法起个名,测试报告中会显示这个名字
+    @DisplayName("登录失败 - 账号不存在")    // 给测试方法起个名,控制台左侧的测试报告中会显示这个名字
     void login_accountNotFound() {
-
+        // 入参
         EmployeeLoginDTO employeeLoginDTO = new EmployeeLoginDTO();
-        employeeLoginDTO.setUsername("notexist");
+        employeeLoginDTO.setUsername("abc");
         employeeLoginDTO.setPassword("123456");
 
-        // 当查询不存在的用户名时，Mapper 返回 null（Mock 默认就返回 null，这里显式写出更清晰）
-        when(employeeMapper.getByUsername("notexist")).thenReturn(null);
+        // 当查询不存在的用户名时,Mapper 返回 null（Mock 默认就返回 null,这里显式写出更清晰）
+        when(employeeMapper.getByUsername("abc")).thenReturn(null);
 
-        // 【关键 API】assertThrows
+        // 【使用assertThrows】--> 验证某段代码会抛出指定类型的异常。如果不抛或抛了别的类型，测试失败。
         AccountNotFoundException exception = assertThrows(AccountNotFoundException.class,
                 () -> employeeService.login(employeeLoginDTO)); // 断言执行lambda表达式中的代码会抛出:AccountNotFoundException异常,如果没抛异常/抛了别的类型，测试失败(因为设定的就是抛自己定义好的异常-->才是预期)
 
-        // 验证 异常信息 是否与 我自定义的常量 一致
+        // 【断言】--> 验证 "异常信息exception.getMessage()" 是否= "我自定义的常量异常信息MessageConstant.ACCOUNT_NOT_FOUND"
         assertEquals(MessageConstant.ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
@@ -116,13 +116,15 @@ class EmployeeServiceImplTest {
 
         EmployeeLoginDTO employeeLoginDTO = new EmployeeLoginDTO();
         employeeLoginDTO.setUsername("admin");
-        employeeLoginDTO.setPassword("wrongpassword");  // 错误密码
+        employeeLoginDTO.setPassword("654321");  // 正确密码:123456
 
         when(employeeMapper.getByUsername("admin")).thenReturn(testEmployee);
 
         // 密码 MD5 不匹配 → 应抛出 PasswordErrorException
         PasswordErrorException exception = assertThrows(PasswordErrorException.class,
                 () -> employeeService.login(employeeLoginDTO));
+
+        // 【断言】--> 验证 "异常信息exception.getMessage()" 是否= "我自定义的常量异常信息MessageConstant.PASSWORD_ERROR"
         assertEquals(MessageConstant.PASSWORD_ERROR, exception.getMessage());
     }
 
@@ -147,6 +149,7 @@ class EmployeeServiceImplTest {
         // 密码正确但账号被锁定 → 应抛出 AccountLockedException
         AccountLockedException exception = assertThrows(AccountLockedException.class,
                 () -> employeeService.login(employeeLoginDTO));
+
         assertEquals(MessageConstant.ACCOUNT_LOCKED, exception.getMessage());
     }
 
@@ -162,7 +165,7 @@ class EmployeeServiceImplTest {
         // 1. BeanUtils.copyProperties 把 DTO 属性拷贝到 Entity
         // 2. 手动设置 status = ENABLE, password = MD5(123456)
         // 3. 调用 mapper.insert(employee)
-        // 我们需要验证这三步都正确执行了
+        // 需要验证这三步都正确执行了
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setUsername("newuser");
@@ -174,14 +177,14 @@ class EmployeeServiceImplTest {
         // 执行被测方法
         employeeService.add(employeeDTO);
 
-        // 【关键 API】ArgumentCaptor -- 参数捕获器
-        // 为什么需要它？因为 add 方法内部 new 了一个 Employee 对象传给 mapper.insert()，
-        // 我们拿不到这个内部创建的对象的引用，所以用 ArgumentCaptor "截获"它
+        // 【关键 API】 --> ArgumentCaptor 参数捕获器
+        // 为什么需要它？因为 add 方法内部 new 了一个 Employee 对象传给 mapper.insert(),我们拿不到这个内部创建的对象的引用，所以用 ArgumentCaptor "截获"它
         ArgumentCaptor<Employee> captor = ArgumentCaptor.forClass(Employee.class);
         verify(employeeMapper).insert(captor.capture());  // 截获 insert 的参数
 
         Employee savedEmployee = captor.getValue();  // 拿到被截获的 Employee 对象
 
+        // 【断言】
         // 验证 DTO → Entity 的属性拷贝是否正确
         assertEquals("newuser", savedEmployee.getUsername());
         assertEquals("新员工", savedEmployee.getName());
@@ -190,11 +193,8 @@ class EmployeeServiceImplTest {
         assertEquals("440101199505051234", savedEmployee.getIdNumber());
 
         // 验证 Service 手动设置的默认值
-        assertEquals(StatusConstant.ENABLE, savedEmployee.getStatus());   // 默认状态应为"启用"
-        assertEquals(
-                DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()),
-                savedEmployee.getPassword()   // 默认密码应为 MD5 加密后的 "123456"
-        );
+        assertEquals(StatusConstant.ENABLE, savedEmployee.getStatus());  // 默认状态应为"启用"
+        assertEquals(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()), savedEmployee.getPassword());  //默认密码应为MD5加密后的"123456"
     }
 
 
@@ -211,7 +211,7 @@ class EmployeeServiceImplTest {
         queryDTO.setPageSize(10);
 
         // 构造一个模拟的分页结果
-        Page<Employee> page = new Page<>(1, 10);
+        Page<Employee> page = new Page<>(1, 10); // 1表示当前页码（第1页）, 10表示每页显示的记录数（每页10条）
         List<Employee> employeeList = new ArrayList<>();
         employeeList.add(testEmployee);
         page.addAll(employeeList);
@@ -302,7 +302,8 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("根据ID查询员工 - 员工不存在返回null")
     void getById_notExists() {
-        // Mock 默认返回 null，但显式写出更清晰
+
+        // Mock 默认返回 null，但显式写出来更清晰明白
         when(employeeMapper.getById(999L)).thenReturn(null);
 
         Employee result = employeeService.getById(999L);
@@ -319,6 +320,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("修改员工信息 - 正常流程")
     void update_success() {
+        // 准备输入参数
         EmployeeDTO dto = new EmployeeDTO();
         dto.setId(1L);
         dto.setUsername("admin_updated");
@@ -327,6 +329,7 @@ class EmployeeServiceImplTest {
         dto.setSex("男");
         dto.setIdNumber("440101199001015678");
 
+        // 执行被测方法
         employeeService.update(dto);
 
         // 截获传给 mapper.update 的参数，验证属性拷贝是否正确

@@ -39,7 +39,7 @@ class CategoryServiceImplTest {
     private CategoryServiceImpl categoryService;
 
 
-    // ==================== save 方法测试 ====================
+    // ================================= save()方法 单元测试 =================================
     @Test
     @DisplayName("新增分类 - 默认状态为禁用")
     void save_success() {
@@ -58,7 +58,7 @@ class CategoryServiceImplTest {
         assertEquals(StatusConstant.DISABLE, captured.getStatus());  // 新增分类默认为禁用
     }
 
-    // ==================== pageQuery 方法测试 ====================
+    // ================================= pageQuery()方法 单元测试 =================================
     @Test
     @DisplayName("分页查询分类 - 正常返回")
     void pageQuery_success() {
@@ -77,7 +77,7 @@ class CategoryServiceImplTest {
         assertEquals(1, result.getTotal());
     }
 
-    // ==================== deleteById 方法测试 ====================
+    // ================================= deleteById()方法 单元测试 =================================
     @Test
     @DisplayName("删除分类 - 正常删除（无关联菜品和套餐）")
     void deleteById_success() {
@@ -110,7 +110,7 @@ class CategoryServiceImplTest {
         assertEquals(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL, exception.getMessage());
     }
 
-    // ==================== update 方法测试 ====================
+    // ================================= update()方法 单元测试 =================================
 
     @Test
     @DisplayName("修改分类 - 正常修改")
@@ -131,7 +131,7 @@ class CategoryServiceImplTest {
         assertEquals(1L, captured.getId());
     }
 
-    // ==================== startOrStop 方法测试 ====================
+    // ================================= startOrStop()方法 单元测试 =================================
 
     @Test
     @DisplayName("启用分类")
@@ -156,7 +156,7 @@ class CategoryServiceImplTest {
         assertEquals(StatusConstant.DISABLE, captor.getValue().getStatus());
     }
 
-    // ==================== list 方法测试 ====================
+    // ================================= list()方法 单元测试 =================================
 
     @Test
     @DisplayName("根据类型查询分类列表")

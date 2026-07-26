@@ -60,7 +60,7 @@ class SetmealServiceImplTest {
                 .build();
     }
 
-    // ==================== pageQuery 方法测试 ====================
+    // ================================= pageQuery()方法 单元测试 =================================
 
     @Test
     @DisplayName("分页查询套餐 - 正常返回")
@@ -80,7 +80,7 @@ class SetmealServiceImplTest {
         assertEquals(1, result.getTotal());
     }
 
-    // ==================== addSetmealWithDish 方法测试 ====================
+    // ================================= addSetmealWithDish()方法 单元测试 =================================
 
     @Test
     @DisplayName("新增套餐 - 带菜品")
@@ -114,7 +114,7 @@ class SetmealServiceImplTest {
         verify(setmealDishMapper, never()).insertBatch(anyList());
     }
 
-    // ==================== updateSetmealWithDish 方法测试 ====================
+    // ================================= updateSetmealWithDish()方法 单元测试 =================================
 
     @Test
     @DisplayName("修改套餐 - 有新菜品关联")
@@ -149,7 +149,7 @@ class SetmealServiceImplTest {
         verify(setmealDishMapper, never()).insertBatch(anyList());
     }
 
-    // ==================== getByIdWithDish 方法测试 ====================
+    // ================================= getByIdWithDish()方法 单元测试 =================================
 
     @Test
     @DisplayName("根据ID查询套餐和菜品 - 正常返回")
@@ -168,7 +168,7 @@ class SetmealServiceImplTest {
         assertEquals(1, result.getSetmealDishes().size());
     }
 
-    // ==================== deleteBatch 方法测试 ====================
+    // ================================= deleteBatch()方法 单元测试 =================================
 
     @Test
     @DisplayName("批量删除套餐 - 正常删除（均为停用状态）")
@@ -199,7 +199,7 @@ class SetmealServiceImplTest {
         assertEquals(MessageConstant.SETMEAL_ON_SALE, exception.getMessage());
     }
 
-    // ==================== startOrStop 方法测试 ====================
+    // ================================= startOrStop()方法 单元测试 =================================
 
     @Test
     @DisplayName("禁用套餐")
@@ -240,7 +240,7 @@ class SetmealServiceImplTest {
         assertEquals(MessageConstant.SETMEAL_ENABLE_FAILED, exception.getMessage());
     }
 
-    // ==================== list 方法测试 ====================
+    // ================================= list()方法 单元测试 =================================
 
     @Test
     @DisplayName("用户端 - 条件查询套餐")
@@ -255,7 +255,7 @@ class SetmealServiceImplTest {
         assertEquals("双人套餐", result.get(0).getName());
     }
 
-    // ==================== getDishItemById 方法测试 ====================
+    // ================================= getDishItemById()方法 单元测试 =================================
 
     @Test
     @DisplayName("用户端 - 根据套餐ID查询包含的菜品")

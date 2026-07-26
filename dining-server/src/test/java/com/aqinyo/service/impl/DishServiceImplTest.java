@@ -59,7 +59,7 @@ class DishServiceImplTest {
                 .build();
     }
 
-    // ==================== addDishWithFlavor 方法测试 ====================
+    // ================================= addDishWithFlavor()方法 单元测试 =================================
 
     @Test
     @DisplayName("新增菜品 - 带口味")
@@ -98,7 +98,7 @@ class DishServiceImplTest {
         verify(dishFlavorMapper, never()).insertBatch(anyList());
     }
 
-    // ==================== pageQuery 方法测试 ====================
+    // ================================= pageQuery()方法 单元测试 =================================
 
     @Test
     @DisplayName("分页查询菜品 - 正常返回")
@@ -118,7 +118,7 @@ class DishServiceImplTest {
         assertEquals(1, result.getTotal());
     }
 
-    // ==================== deleteBatch 方法测试 ====================
+    // ================================= deleteBatch()方法 单元测试 =================================
 
     @Test
     @DisplayName("批量删除菜品 - 正常删除（菜品均为停售状态且未被套餐关联）")
@@ -167,7 +167,7 @@ class DishServiceImplTest {
         assertEquals(MessageConstant.DISH_BE_RELATED_BY_SETMEAL, exception.getMessage());
     }
 
-    // ==================== getByIdWithFlavor 方法测试 ====================
+    // ================================= getByIdWithFlavor()方法 单元测试 =================================
 
     @Test
     @DisplayName("根据ID查询菜品和口味 - 正常返回")
@@ -187,7 +187,7 @@ class DishServiceImplTest {
         assertEquals("辣度", result.getFlavors().get(0).getName());
     }
 
-    // ==================== updateDishWithFlavor 方法测试 ====================
+    // ================================= updateDishWithFlavor()方法 单元测试 =================================
 
     @Test
     @DisplayName("修改菜品和口味 - 有新口味")
@@ -223,7 +223,7 @@ class DishServiceImplTest {
         verify(dishFlavorMapper, never()).insertBatch(anyList());
     }
 
-    // ==================== startOrStop 方法测试 ====================
+    // ================================= startOrStop()方法 单元测试 =================================
 
     @Test
     @DisplayName("启用菜品")
@@ -238,7 +238,7 @@ class DishServiceImplTest {
         assertEquals(1L, captured.getId());
     }
 
-    // ==================== getByCategoryId 方法测试 ====================
+    // ================================= getByCategoryId()方法 单元测试 =================================
 
     @Test
     @DisplayName("根据分类ID查询菜品")
@@ -252,7 +252,7 @@ class DishServiceImplTest {
         assertEquals("宫保鸡丁", result.get(0).getName());
     }
 
-    // ==================== listWithFlavor 方法测试 ====================
+    // ================================= listWithFlavor()方法 单元测试 =================================
 
     @Test
     @DisplayName("用户端 - 根据分类查询菜品和口味")

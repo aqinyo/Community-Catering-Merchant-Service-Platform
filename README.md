@@ -15,10 +15,11 @@
 - 版本控制: Git
 - 容器: Docker
 - 环境配置: 多环境yml（dev、test、pro）
+- 测试与规范: Junit5 + Mockito、Apifox
 
 #### 运行环境
 - 操作系统: Windows 10
-- 开发工具: IntelliJ IDEA（OpenJDK 21）
+- 开发工具: IntelliJ IDEA（Amazon Corretto 1.8.0_452）
 - 数据库: MySQL 8.0 （本地）
 - 中间件运行操作系统: Linux（CentOS 7）
 - 缓存: Redis 6.2.6
@@ -39,6 +40,7 @@
 5. 公共字段自动填充（利用自定义注解标识,统一做AOP）
 6. 多环境配置解耦（分为:主yml、dev.yml、test.yml、pro.yml）
 7. 抽取代码中的字符串、提示词等为常量类（统一存放在 Dining-common 模块当中）
+8. 基于JUnit5 + Mockito框架，对7个核心ServiceImpl编写76个单元测试用例，覆盖正常流程、各类边界与异常场景
 
 #### 注意事项
 1. 项目启动前记得检查Linux防火墙是否有放行中间件端口，如RabbitMQ的5672端口、Redis的6379端口等

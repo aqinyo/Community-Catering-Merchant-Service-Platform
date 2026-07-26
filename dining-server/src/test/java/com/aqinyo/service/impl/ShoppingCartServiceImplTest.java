@@ -47,7 +47,7 @@ class ShoppingCartServiceImplTest {
         BaseContext.removeCurrentId();
     }
 
-    // ==================== addShoppingCart 方法测试 ====================
+    // ================================= addShoppingCart()方法 单元测试 =================================
 
     @Test
     @DisplayName("添加购物车 - 商品已存在，数量+1")
@@ -120,7 +120,7 @@ class ShoppingCartServiceImplTest {
         assertEquals(1, captured.getNumber());
     }
 
-    // ==================== showShoppingCart 方法测试 ====================
+    // ================================= showShoppingCart()方法 单元测试 =================================
 
     @Test
     @DisplayName("查询购物车 - 正常返回")
@@ -136,7 +136,7 @@ class ShoppingCartServiceImplTest {
         assertEquals("宫保鸡丁", result.get(0).getName());
     }
 
-    // ==================== cleanShoppingCart 方法测试 ====================
+    // ================================= cleanShoppingCart()方法 单元测试 =================================
 
     @Test
     @DisplayName("清空购物车")
@@ -146,7 +146,7 @@ class ShoppingCartServiceImplTest {
         verify(shoppingCartMapper, times(1)).clean(1L);
     }
 
-    // ==================== subShoppingCart 方法测试 ====================
+    // ================================= subShoppingCart()方法 单元测试 =================================
 
     @Test
     @DisplayName("减少购物车 - 数量为1时删除记录")
