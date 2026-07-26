@@ -10,6 +10,12 @@ import java.util.List;
 
 public interface DishService {
 
+    /*   用户端   */
+    // 根据分类id查询菜品和对应口味
+    List<DishVO> listWithFlavor(Dish dish);
+
+
+    /*   商家端   */
     // 新增菜品
     void addDishWithFlavor(DishDTO dishDTO);
 
@@ -30,6 +36,5 @@ public interface DishService {
 
     // 查询分类id
     List<Dish> getByCategoryId(Long categoryId);
-    List<DishVO> listWithFlavor(Dish dish);
 
 }

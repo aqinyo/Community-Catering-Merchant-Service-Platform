@@ -37,7 +37,7 @@ public class DishServiceImpl implements DishService {
     @Autowired
     private SetmealDishMapper setmealDishMapper;    // 菜品套餐     (这个菜品是关联了两个表,所以要依赖注入两个 --> 菜品口味表 + 菜品套餐表)
 
-    /*  新增菜品  */
+    /*  商家端 - 新增菜品  */
     @Override            //加重写注解-->规范些(也可以省略掉,IDEA也能智能识别,但是加上规范些)
     @Transactional
     public void addDishWithFlavor(DishDTO dishDTO) {
@@ -57,7 +57,7 @@ public class DishServiceImpl implements DishService {
     }
 
 
-    /*  分页查询菜品  */
+    /*  商家端 - 分页查询菜品  */
     @Override
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize()); // 用到PageHelper分页插件
@@ -66,7 +66,7 @@ public class DishServiceImpl implements DishService {
     }
 
 
-    /*  批量删除菜品  */
+    /*  商家端 - 批量删除菜品  */
     @Override
     @Transactional
     public void deleteBatch(List<Long> ids) {
@@ -91,7 +91,7 @@ public class DishServiceImpl implements DishService {
     }
 
 
-    /*  根据id查询 菜品和对应口味  */
+    /*  商家端 - 根据id查询 菜品和对应口味  */
     @Override
     public DishVO getByIdWithFlavor(Long id) {
         // 根据菜品
@@ -106,7 +106,7 @@ public class DishServiceImpl implements DishService {
     }
 
 
-    /*  根据id修改 菜品和对应口味  */
+    /*  商家端 - 根据id修改 菜品和对应口味  */
     @Override
     @Transactional
     public void updateDishWithFlavor(DishDTO dishDTO) {
@@ -129,7 +129,7 @@ public class DishServiceImpl implements DishService {
     }
 
 
-    /*  启用、禁用菜品  */
+    /*  商家端 - 启用、禁用菜品  */
     @Override
     public void startOrStop(int status, Long id) {
         Dish dish = Dish.builder()
@@ -140,12 +140,14 @@ public class DishServiceImpl implements DishService {
     }
 
 
-    /*  查询分类id  */
+    /*   商家端 - 查询分类id  */
     @Override
     public List<Dish> getByCategoryId(Long categoryId) {
         return dishMapper.getByCategoryId(categoryId);
     }
 
+
+    /*   用户端 - 根据分类id查询菜品和对应口味   */
     public List<DishVO> listWithFlavor(Dish dish) {
         List<Dish> dishList = dishMapper.list(dish);
 

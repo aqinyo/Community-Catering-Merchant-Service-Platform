@@ -34,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     private SetmealMapper setmealMapper;    // 菜品套餐
 
 
-    /*   新增分类   */
+    /*   商家端 - 新增分类   */
     public void save(CategoryDTO categoryDTO) {
         Category category = new Category();
         //属性拷贝
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    /*   分页查询   */
+    /*   商家端 - 分页查询   */
     public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
         PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
         //下一条sql进行分页，自动加入limit关键字分页
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    /*   删除分类 (根据id)   */
+    /*   商家端 - 删除分类 (根据id)   */
     public void deleteById(Long id) {
         //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
         Integer count = dishMapper.countByCategoryId(id);
@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    /*   修改分类 (根据已存在的id修改)  */
+    /*   商家端 - 修改分类 (根据已存在的id修改)  */
     public void update(CategoryDTO categoryDTO) {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO,category);
@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    /*   启用、禁用分类   */
+    /*   商家端 - 启用、禁用分类   */
     public void startOrStop(Integer status, Long id) {
         Category category = Category.builder()
                 .id(id)
@@ -110,7 +110,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    /*   查询分类 (根据类型)  */
+    /*   用户端 - 查询分类 (根据类型的id)  */
     public List<Category> list(Integer type) {
         return categoryMapper.list(type);
     }

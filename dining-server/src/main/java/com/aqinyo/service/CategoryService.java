@@ -8,6 +8,12 @@ import java.util.List;
 
 public interface CategoryService {
 
+    /*   用户端   */
+    // 查询分类 (根据类型的id)
+    List<Category> list(Integer type);
+
+
+    /*   商家端   */
     // 新增分类
     void save(CategoryDTO categoryDTO);
 
@@ -22,8 +28,5 @@ public interface CategoryService {
 
     // 启用、禁用分类
     void startOrStop(Integer status, Long id);
-
-    // 查询分类 (根据类型的id)
-    List<Category> list(Integer type);
 
 }

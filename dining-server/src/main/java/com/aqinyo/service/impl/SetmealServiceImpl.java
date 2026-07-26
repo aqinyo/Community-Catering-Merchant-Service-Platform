@@ -34,6 +34,7 @@ public class SetmealServiceImpl implements SetmealService {
     @Autowired
     private DishMapper dishMapper;
 
+    /*   商家端 - 分页查询   */
     @Override
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
@@ -43,6 +44,8 @@ public class SetmealServiceImpl implements SetmealService {
         return new PageResult(total, list);
     }
 
+
+    /*   商家端 - 添加套餐   */
     @Override
     @Transactional
     public void addSetmealWithDish(SetmealDTO setmealDTO) {
@@ -59,6 +62,8 @@ public class SetmealServiceImpl implements SetmealService {
         }
     }
 
+
+    /*   商家端 - 修改套餐   */
     @Override
     public void updateSetmealWithDish(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
@@ -75,6 +80,8 @@ public class SetmealServiceImpl implements SetmealService {
         }
     }
 
+
+    /*   商家端 - 根据id查询套餐   */
     @Override
     public SetmealVO getByIdWithDish(Long id) {
         Setmeal setmeal = setmealMapper.getById(id);
@@ -86,6 +93,8 @@ public class SetmealServiceImpl implements SetmealService {
         return setmealVO;
     }
 
+
+    /*   商家端 - 删除套餐   */
     @Override
     public void deleteBatch(List<Long> ids) {
         for (Long id : ids) {
@@ -99,6 +108,8 @@ public class SetmealServiceImpl implements SetmealService {
         setmealDishMapper.deleteBySetmealIds(ids);
     }
 
+
+    /*   商家端 - 启用禁用套餐   */
     @Override
     public void startOrStop(int status, Long id) {
         if(status == 1){
@@ -113,12 +124,17 @@ public class SetmealServiceImpl implements SetmealService {
         setmealMapper.update(setmeal);
     }
 
+
+    /*   用户端 - 条件查询   */
     public List<Setmeal> list(Setmeal setmeal) {
         List<Setmeal> list = setmealMapper.list(setmeal);
         return list;
     }
 
+
+    /*   用户端 - 根据套餐id查询包含的菜品   */
     public List<DishItemVO> getDishItemById(Long id) {
         return setmealMapper.getDishItemBySetmealId(id);
     }
+
 }

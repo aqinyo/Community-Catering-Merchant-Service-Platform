@@ -38,7 +38,7 @@ public class SetmealController {
         return Result.success(list);
     }
 
-    /*   根据套餐id查询包含的菜品列表   */
+    /*   根据套餐id查询包含的菜品   */
     @GetMapping("/dish/{id}")
     @ApiOperation("根据套餐id查询包含的菜品列表")
     public Result<List<DishItemVO>> dishList(@PathVariable("id") Long id) {

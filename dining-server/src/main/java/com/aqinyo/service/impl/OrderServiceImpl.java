@@ -48,10 +48,10 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private RabbitTemplate rabbitTemplate;  // 引入做:订单超时自动取消
+    private RabbitTemplate rabbitTemplate;  // 引入做: 订单超时自动取消
 
 
-    /*   提交订单   */
+    /*   用户端 - 提交订单   */
     @Override
     @Transactional  //开启事务注解-->为了保证数据一致性  (若订单表的数据插入成功,而与其相关联的订单明细表插入失败,则数据不一致了-->因此设涉及到这类情况的都需要开启一个事务注解)
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
@@ -128,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   订单支付  --> 流程非常规定,理解即可 --> 用到时完全可以复制使用  */
+    /*   用户端 - 订单支付  (流程非常规定,理解即可,用到时完全可以复制使用) */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 当前登录用户id
         Long userId = BaseContext.getCurrentId();
@@ -154,11 +154,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   支付成功,修改订单状态   */
+    /*   用户端 - 支付成功、修改订单状态   */
+    /**
+     * 该方法用于处理支付成功后的回调逻辑。
+     * 当用户完成支付后，根据商户订单号（outTradeNo）查询订单，
+     * 并将订单状态更新为“待接单”，支付状态更新为“已支付”（PAID），同时记录结账时间。
+     */
     public void paySuccess(String outTradeNo) {
-
         // 根据订单号查询订单
         Orders ordersDB = orderMapper.getByNumber(outTradeNo);
+
+        // 判断订单是否存在，若不存在则抛出业务异常
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
 
         // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
         Orders orders = Orders.builder()
@@ -172,7 +181,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   分页查询   */
+    /*   用户端 - 历史订单分页查询   */
     public PageResult pageQueryByUser(int pageNum, int pageSize, Integer status) {
         // 设置分页
         PageHelper.startPage(pageNum, pageSize);
@@ -204,7 +213,7 @@ public class OrderServiceImpl implements OrderService {
         return new PageResult(page.getTotal(), list);
     }
 
-    /*   增加购物车菜品   */
+    /*   用户端 - 再来一单 (增加购物车菜品)   */
     @Override
     public void orderAgain(Long id) {
         Long userId = BaseContext.getCurrentId();
@@ -224,7 +233,7 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
-    /*   订单详情   */
+    /*   用户端、商家端公共 - 订单详情   */
     @Override
     public OrderVO details(Long id) {
         Orders orders = orderMapper.getById(id);
@@ -235,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
         return orderVO;
     }
 
-    /*   取消订单   */
+    /*   用户端 - 取消订单   */
     @Override
     public void cancelById(Long id) {
         Orders orderDB = orderMapper.getById(id);
@@ -269,21 +278,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   订单分页查询   */
+    /*   商家端 - 订单条件分页查询   */
     @Override
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        // 开启分页
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
 
+        // 条件分页查询订单列表
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
 
-        // 部分订单状态，需要额外返回订单菜品信息，将Orders转化为OrderVO
+        // 额外查询并封装订单菜品信息，将Orders转化为OrderVO
         List<OrderVO> orderVOList = getOrderVOList(page);
 
+        // 封装分页结果返回
         return new PageResult(page.getTotal(), orderVOList);
     }
 
 
-    /*   根据状态统计订单数量   */
+    /*   商家端 - 各订单数据统计   */
     @Override
     public OrderStatisticsVO statistics() {
         int toBeConfirmed = orderMapper.getCountByStatus(Orders.TO_BE_CONFIRMED);
@@ -293,7 +305,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   接单   */
+    /*   商家端 - 接单 (确认订单)   */
     @Override
     public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = Orders.builder()
@@ -304,7 +316,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   拒单   */
+    /*   商家端 - 拒单   */
     @Override
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
         Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
@@ -332,7 +344,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   取消订单   */
+    /*   商家端 - 取消订单   */
     @Override
     public void cancel(OrdersCancelDTO ordersCancelDTO) {
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
@@ -358,7 +370,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   派送订单   */
+    /*   商家端 - 派送订单   */
     @Override
     public void deliveryById(Long id) {
         Orders orders = Orders.builder()
@@ -369,7 +381,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    /*   完成订单   */
+    /*   商家端 - 完成订单   */
     @Override
     public void complete(Long id) {
         Orders orders = Orders.builder()
@@ -379,27 +391,34 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
-
-    /*   返回订单菜品信息   */
+    /**
+        内部辅助方法: 将分页的订单实体列表转换为包含菜品明细的 OrderVO 列表。
+        (注: 此方法为私有辅助方法,仅供本类内部的 "订单分页查询接口" 调用,用于组装响应数据)
+    */
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
-        // 需要返回订单菜品信息，自定义OrderVO响应结果
         List<OrderVO> orderVOList = new ArrayList<>();
 
         List<Orders> ordersList = page.getResult();
         if (!CollectionUtils.isEmpty(ordersList)) {
             for (Orders orders : ordersList) {
-                // 将共同字段复制到OrderVO
+                // 1. 将订单实体的共同字段复制到 OrderVO
                 OrderVO orderVO = new OrderVO();
                 BeanUtils.copyProperties(orders, orderVO);
-                String orderDishes = getOrderDishesStr(orders);//引用下面的getOrderDishesStr方法(因为只有本类使用,所以设置为private)
-                // 将订单菜品信息封装到orderVO中，并添加到orderVOList
+                
+                // 2. 调用内部辅助方法获取菜品明细字符串，并封装到 orderVO 中
+                String orderDishes = getOrderDishesStr(orders);
                 orderVO.setOrderDishes(orderDishes);
+                
                 orderVOList.add(orderVO);
             }
         }
         return orderVOList;
     }
 
+    /**
+        内部辅助方法: 根据订单ID查询订单明细,并将菜品名称与数量拼接为指定格式的字符串。
+        (注: 此方法为私有辅助方法,仅供本类内部的 "getOrderVOList"方法 调用,用于组装订单的菜品信息字符串)
+    */
     private String getOrderDishesStr(Orders orders) {
         // 查询订单菜品详情信息（订单中的菜品和数量）
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
