@@ -25,8 +25,8 @@ import java.util.Map;
 @RestController     // @Controller + @ResponseBody
 @RequestMapping("/admin/employee")     //请求路径的前缀
 @Slf4j
-@Api(tags = "员工相关接口")   /* 类级别: 接口分组标签   (@Api 和 @ApiOperation 都是Swagger的注解,是Swagger扫描时读取的"文档素材")           */
-public class EmployeeController {
+@Api(tags = "员工相关接口")  /* 类级别: 描述接口分组   (@Api和@ApiModel等都是Swagger的注解,是Swagger扫描这些注解时,读取的 "接口文档" 素材)  */
+public class EmployeeController {                                                // 在我项目中采取的是 "先编码,后自动生成文档" 的接口文档设计模式
 
     @Autowired
     private EmployeeService employeeService;    // 多态写法-->依赖注入的是service接口实现类serviceImpl的对象
@@ -35,7 +35,7 @@ public class EmployeeController {
 
     /*  登录  */
     @PostMapping("/login")
-    @ApiOperation("员工登录")   /* 方法级别: 接口描述 */
+    @ApiOperation("员工登录")   /*  方法级别: 描述接口分组下的单个接口  */
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 

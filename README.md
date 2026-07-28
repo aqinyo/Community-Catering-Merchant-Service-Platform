@@ -16,6 +16,7 @@
 - 容器: Docker
 - 环境配置: 多环境yml（dev、test、pro）
 - 测试与规范: Junit5 + Mockito、Apifox
+- 接口文档: Knife4j + Swagger2
 
 #### 运行环境
 - 操作系统: Windows 10
@@ -41,6 +42,7 @@
 6. 多环境配置解耦（分为:主yml、dev.yml、test.yml、pro.yml）
 7. 抽取代码中的字符串、提示词等为常量类（统一存放在 Dining-common 模块当中）
 8. 基于JUnit5 + Mockito框架，对7个核心ServiceImpl编写76个单元测试用例，覆盖正常流程、各类边界与异常场景
+9. 基于 Knife4j + Swagger2 自动生成接口文档（Controller 层: @Api + @ApiOperation 、 DTO类/VO类的EmployeeLoginDTO/EmployeeLoginVO: @ApiModel + @ApiModelProperty）
 
 #### 注意事项
 1. 项目启动前记得检查Linux防火墙是否有放行中间件端口，如RabbitMQ的5672端口、Redis的6379端口等

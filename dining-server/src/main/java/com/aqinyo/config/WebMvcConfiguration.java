@@ -57,7 +57,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
 
-    /*  通过knife4j生成接口文档 (格式可参考复用)  */
+    /*  通过 knife4j框架 自动生成接口文档 (格式可参考复用)  */
     @Bean   // B端 admin的
     public Docket adminDocket() {   /*  Docket 是 springfox 的核心配置对象,代表 "一组接口文档"  */
 

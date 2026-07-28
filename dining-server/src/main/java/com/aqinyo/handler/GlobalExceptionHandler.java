@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /*
-* 全局异常处理器: 拦截项目中所有Controller层抛出的异常,统一处理后返回友好的错误信息给前端/即return Result.error("xxx的自定义提示"),避免直接暴露堆栈信息
+ *   全局异常处理器: 拦截项目中所有 "Controller层" 抛出的异常,统一处理后(统一序列化为JSON格式)返回友好的错误信息给前端 / 即return Result.error("xxx"),避免直接暴露堆栈信息
 */
-@RestControllerAdvice //基于该注解实现
+@RestControllerAdvice // 基于该注解实现全局异常处理。该注解相当于 @ControllerAdvice + @ResponseBody
 @Slf4j
 public class GlobalExceptionHandler {
 
     /*  捕获全局的异常 (最核心！)  */
-    @ExceptionHandler
-    public Result exceptionHandler(BaseException ex){
+    @ExceptionHandler   // @ExceptionHandler负责拦截 "指定异常类型" 并交给该方法处理
+    public Result exceptionHandler(BaseException ex){   // 指定了BaseException的异常类型
         log.error("异常信息：{}", ex.getMessage());
-        return Result.error(ex.getMessage()); //如上所述:返回友好的错误信息给前端
+        return Result.error(ex.getMessage()); //返回友好的错误信息给前端    (这就是想要达到:捕获全局异常的效果)
     }
 
 
