@@ -3,8 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- 打包类型为pom: 表示当前工程是一个父子聚合工程，本身不包含业务代码。父工程不会生成jar或war文件，仅生成pom文件。而子工程则根据实际需要设置为jar或war -->
     <packaging>pom</packaging>
 
+
+    <!--  <modules> 标签负责聚合子工程，声明了当前父工程所包含的子模块 -->
+    <modules>
+        <module>dining-common</module>
+        <module>dining-model</module>
+        <module>dining-server</module>
+    </modules>
+
+
+    <!-- SpringBoot项目需要继承 "父工程"  (后面添加进SpringBoot项目所涉及到的依赖，都不需要加version,因为父工程都统一管理) -->
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <version>2.7.3</version>
+    </parent>
+
+
+    <!-- 在<properties>中存放的是【Spring Boot 父工程未统一管理的依赖】并手动指定了版本
+         其中既有第三方中间件/服务（如 MyBatis、Druid、阿里云OSS、Knife4j），也有工具类库（如 Lombok、Fastjson、Commons-lang），还有基础组件（如 AspectJ、JAXB）
+         如果未来需要升级某个依赖（如 lombok），只需在此处修改一次版本号，所有引用该属性的依赖都会自动生效，避免了多处重复配置和修改带来的维护成本  -->
     <properties>
         <mybatis.spring>2.2.0</mybatis.spring>
         <lombok>1.18.30</lombok>
@@ -17,15 +39,8 @@
         <aspectj>1.9.4</aspectj>
         <jjwt>0.9.1</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
-        <poi>3.16</poi>
     </properties>
 
-    <!-- SpringBoot项目需要继承 "父工程"  (后面SpringBoot涉及到的依赖都不需要加version了,因为父工程都素统一管理) -->
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <groupId>org.springframework.boot</groupId>
-        <version>2.7.3</version>
-    </parent>
 
     <!-- 当前Maven项目隶属组织名称 -->
     <groupId>com.aqinyo</groupId>
@@ -33,15 +48,11 @@
     <artifactId>Dining_service_platform</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <modules>
-        <module>dining-common</module>
-        <module>dining-model</module>
-        <module>dining-server</module>
-    </modules>
 
     <dependencyManagement>
         <dependencies>
-
+        <!-- 下面各个 <dependency> 的 <version> 是通过 ${属性名} 来引用上面<properties>中统一的值（例如 ${mybatis.spring}） -->
+        <!--  -->
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>

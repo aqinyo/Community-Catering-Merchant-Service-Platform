@@ -5,15 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dining-server</artifactId>
 
+
+    <!-- <parent> 标签用于声明当前子工程所继承的父工程。下面的三个子标签则用于在Maven中定位该唯一父工程 -->
     <parent>
-        <!-- 定义当前 Maven项目隶属组织名称 -->
+        <!-- 父工程隶属的组织名称 -->
         <groupId>com.aqinyo</groupId>
-        <!-- 当前 Maven项目名称 -->
+        <!-- 父工程的项目名称 -->
         <artifactId>Dining_service_platform</artifactId>
+        <!-- 父工程的版本号 -->
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+
     <dependencies>
+        <!-- 下面各个依赖的版本，已经在父工程中被统一管理了 -->
 
         <!-- 添加server模块,所需要依赖的 dining-common、dining-model 两个子模块 -->
         <dependency>
@@ -122,13 +127,16 @@
 
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
+
+    <!-- 这里主要作用是: 将 Spring Boot 项目打包成可执行的 jar包 -->
+    <build>     <!-- <build> 标签：用于配置项目的构建过程 -->
+        <plugins>   <!-- <plugins> 标签：用于声明构建时需要使用的 Maven 插件集合 -->
+            <plugin>    <!-- <plugin> 标签：声明具体的 Maven 插件 -->
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>spring-boot-maven-plugin</artifactId>   <!-- spring-boot-maven-plugin：Spring Boot 提供的Maven插件 -->
             </plugin>
         </plugins>
     </build>
+
 
 </project>

@@ -5,16 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dining-model</artifactId>
 
+
+    <!-- <parent> 标签用于声明当前子工程所继承的父工程。下面的三个子标签则用于在Maven中定位该唯一父工程 -->
     <parent>
-        <!-- 定义当前 Maven项目隶属组织名称 -->
+        <!-- 父工程隶属的组织名称 -->
         <groupId>com.aqinyo</groupId>
-        <!-- 当前 Maven项目名称 -->
+        <!-- 父工程的项目名称 -->
         <artifactId>Dining_service_platform</artifactId>
+        <!-- 父工程的版本号 -->
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <dependencies>
 
+    <dependencies>
+        <!-- 下面各个依赖的版本，已经在父工程中被统一管理了 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -23,7 +27,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.2</version>
         </dependency>
 
         <dependency>
