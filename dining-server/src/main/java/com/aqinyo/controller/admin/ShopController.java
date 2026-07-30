@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController("adminShopController")  //为了避免admin与user基于bean的名称都叫ShopController的同名冲突,多加东西来区分(其他解决方法: 就是改类名,不要两个都叫ShopController即可)
 @RequestMapping("/admin/shop")
-@Api(tags = "店铺相关接口")
+@Api(tags = "admin端-店铺相关接口")
 @Slf4j
 public class ShopController {
 

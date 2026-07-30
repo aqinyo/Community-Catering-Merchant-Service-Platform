@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController     // @Controller + @ResponseBody
 @RequestMapping("/admin/employee")     //请求路径的前缀
 @Slf4j
-@Api(tags = "员工相关接口")  /* 类级别: 描述接口分组   (@Api和@ApiModel等都是Swagger的注解,是Swagger扫描这些注解时,读取的 "接口文档" 素材)  */
+@Api(tags = "admin端-员工相关接口")  /* 类级别: 描述接口分组   (@Api和@ApiModel等都是Swagger的注解,是Swagger扫描这些注解时,读取的 "接口文档" 素材)  */
 public class EmployeeController {                                                // 在我项目中采取的是 "先编码,后自动生成文档" 的接口文档设计模式
 
     @Autowired

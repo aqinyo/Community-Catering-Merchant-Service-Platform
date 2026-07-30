@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user/addressBook")
-@Api(tags = "C端地址簿接口")
+@Api(tags = "user端-端地址簿接口")
 public class AddressBookController {
 
     @Autowired

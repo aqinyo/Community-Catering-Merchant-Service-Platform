@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController("userOrderController")  //起别名,防止与管理端的订单服务重复
 @RequestMapping("/user/order")
-@Api(tags = "用户端订单相关接口")
+@Api(tags = "user端-订单相关接口")
 @Slf4j
 public class OrderController {
 
