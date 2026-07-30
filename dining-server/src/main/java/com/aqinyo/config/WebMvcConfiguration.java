@@ -39,12 +39,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("开始设置静态资源映射(静态放行)...");
 
         // 映射 /doc.html (Knife4j/Swagger) 的文档页面
-        registry.addResourceHandler("/doc.html")
-                .addResourceLocations("classpath:/META-INF/resources/");         // 还涉及:接口文档页面渲染所需的其他静态资源（如 css/js 等，通常还需放行 /** 到 META-INF/resources，此处仅配置了核心入口）
+        registry.addResourceHandler("/doc.html")    //放行 Knife4j 的前端页面文件,不被 JWT 拦截器挡住 (注意:接口文档页面上展示的接口数据是项目运行时动态生成的噢！)
+                .addResourceLocations("classpath:/META-INF/resources/");     // 还涉及:接口文档页面渲染所需的其他静态资源（如 css/js 等，通常还需放行 /** 到 META-INF/resources，此处仅配置了核心入口）
 
         // 映射 /webjars下所有的前端静态资源  (如Swagger UI渲染所需的JS/CSS等)
         registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");         // Spring Boot 会自动将这些 jar 中的静态资源映射到 classpath:/META-INF/resources/webjars/ 目录下
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");     // Spring Boot 会自动将这些 jar 中的静态资源映射到 classpath:/META-INF/resources/webjars/ 目录下
     }
 
 

@@ -6,7 +6,7 @@
     <artifactId>dining-server</artifactId>
 
 
-    <!-- <parent> 标签用于声明当前子工程所继承的父工程。下面的三个子标签则用于在Maven中定位该唯一父工程 -->
+    <!-- <parent> 标签用于声明当前子工程所继承的父工程。里面的三个子标签（父工程的GAV坐标）则用于在Maven中定位唯一父工程 -->
     <parent>
         <!-- 父工程隶属的组织名称 -->
         <groupId>com.aqinyo</groupId>
