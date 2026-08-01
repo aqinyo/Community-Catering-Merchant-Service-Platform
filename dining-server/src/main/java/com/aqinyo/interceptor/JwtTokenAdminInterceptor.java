@@ -14,9 +14,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * jwt令牌校验的拦截器
- */
+/*   商家端  自定义JWT令牌校验拦截器   */
+
 @Component
 @Slf4j
 public class JwtTokenAdminInterceptor implements HandlerInterceptor {
@@ -43,8 +42,8 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-            log.info("当前员工id：", empId);
-            BaseContext.setCurrentId(empId);
+            log.info("当前员工id：{}", empId);
+            BaseContext.setCurrentId(empId);  // 存管理员ID (引用了BaseContext类的存ID的方法)
             //3、通过，放行
             return true;
         } catch (Exception ex) {

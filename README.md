@@ -36,16 +36,16 @@
 #### 亮点与细节
 1. 规范开发、JWT鉴权、DTO/VO/实体数据隔离、mapper自动代理、RESTful接口规范、 统一响应格式:Result封装
 2. 引入 Redis 优化热点数据缓存
-3. RabbitMQ 异步解耦与延迟消息
+3. RabbitMQ 异步解耦与延迟消息，保证消息可靠性，并完成全局异常消息的兜底机制
 4. 集成阿里云 OSS 图片云端存储
 5. 公共字段自动填充（利用自定义注解标识,统一做AOP）
 6. 多环境配置解耦（分为:主yml、dev.yml、test.yml、pro.yml）
-7. 抽取代码中的字符串、提示词等为常量类（统一存放在 Dining-common 模块当中）
+7. 抽取代码中的字符串、提示词等为常量类，统一管理，避免硬编码（统一存放在 Dining-common 模块当中）
 8. 基于JUnit5 + Mockito框架，对7个核心ServiceImpl编写76个单元测试用例，覆盖正常流程、各类边界与异常场景
 9. 基于 Knife4j + Swagger2 自动生成接口文档（Controller 层: @Api + @ApiOperation 、 DTO类/VO类的EmployeeLoginDTO/EmployeeLoginVO: @ApiModel + @ApiModelProperty）
 
 #### 注意事项
-1. 项目启动前记得检查Linux防火墙是否有放行中间件端口，如RabbitMQ的5672端口、Redis的6379端口等
+1. 项目启动前记得检查Linux防火墙是否有放行中间件端口，如RabbitMQ的5672端口、Redis的6379端口等（docker重启后很容易规则冲突不放行的）
 2. 检查yml配置文件的配置数据是否正确
 
 
