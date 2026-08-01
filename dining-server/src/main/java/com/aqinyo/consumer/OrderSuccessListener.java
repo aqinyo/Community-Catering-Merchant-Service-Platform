@@ -23,9 +23,9 @@ public class OrderSuccessListener {
     @Autowired
     private OrderService orderService;
 
-   @RabbitListener(queues = ORDER_QUEUE_NAME)   //通过@RabbitListener引用即可监听指定的队列
-    public void listenDirectQueue(OrderDelayMessageDTO messageDTO){
-        log.info("消费者收到 order.queue 消息:" + ORDER_SUCCESS + ",订单id: 【" + messageDTO + "】");
+   @RabbitListener(queues = ORDER_QUEUE_NAME)   // 通过@RabbitListener引用,即可监听指定的队列
+    public void listenDirectQueue(OrderDelayMessageDTO messageDTO){     // 这里入什么类型的参,取决于 rabbitTemplate.convertAndSend 那里发了什么类型的参
+        log.info("消费者收到 order.queue 消息:{}, 订单id:{}", ORDER_SUCCESS, messageDTO.getOrderId());
 
         // 在这里调用 Service 实现真正的"下单成功"逻辑
        /* 补充: mq重要的不是发消息,而这个"邮局"的机制-->就是有生产者消费者监听的机制:让收到消息后可以去调用执行其他耗时的业务(这就是异步嘛) */

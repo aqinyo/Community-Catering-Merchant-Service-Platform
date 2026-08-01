@@ -72,9 +72,9 @@ public class OrderServiceImpl implements OrderService {
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
 
-        //向 订单表 插入一条数据  (与下面的明细表不同,订单一般生成一次,然后订单里面有多个明细菜品,所以下面订单明细表是批量插入)
+        //向 "订单表" 插入 "一条" 数据   (与下面的明细表不同,订单一般生成一次,然后订单里面有多个明细菜品,所以下面订单明细表是批量插入)
         Orders orders = new Orders();
-        BeanUtils.copyProperties(ordersSubmitDTO, orders);  //依旧是 对象属性拷贝 + 手动赋值(下面的)
+        BeanUtils.copyProperties(ordersSubmitDTO, orders);  // 依旧是 对象属性拷贝 + 手动赋值 (下面的)
         orders.setOrderTime(LocalDateTime.now());
         orders.setUserId(BaseContext.getCurrentId());
         orders.setStatus(Orders.PENDING_PAYMENT);
@@ -86,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
         //调用mapper,插入封装好的实体类(这里插入成功后才能去调用生产者去发消息,因为要基于插进去数据的订单id)
         orderMapper.insert(orders);
 
-        //向 订单明细表 插入多条数据 (这个操作要用到上面的订单表的id-->所以开启了在xml文件orderMapper.insert的SQL中的useGeneratedKeys属性)
+        //向 "订单明细表" 插入 "多条" 数据    (这个操作要用到上面的订单表的id-->所以开启了在xml文件orderMapper.insert的SQL中的useGeneratedKeys属性)
         List<OrderDetail> orderDetailList = new ArrayList<>();
         for (ShoppingCart cart : list) {
             OrderDetail orderDetail = new OrderDetail();
@@ -97,21 +97,23 @@ public class OrderServiceImpl implements OrderService {
         orderDetailMapper.insertBatch(orderDetailList);
 
 
-        /*   调用 RabbitMQ 生产者发消息 --> 下单成功 + 订单超时自动取消   */
+        /*   调用 RabbitMQ 生产者发消息 --> 下单成功(必要前提) + 订单超时自动取消   */
             //在订单数据插入数据库之后-->才可以拿到数据库中订单表的id-->然后基于这个id去发消息
         Long newOrderId = orders.getId();
         log.info("订单落库成功,生成的订单ID为: {}", newOrderId);
+
         OrderDelayMessageDTO orderSuccess = new OrderDelayMessageDTO();
         orderSuccess.setOrderId(newOrderId);
         try {   //这里捕获异常 --是优化--> 防止发消息失败而影响了主业务  (还好加了:一开始还真异常了-->RabbitMQ消息收发的序列化异常导致的)
             /* 发送 "下单成功" 的消息 */
-            rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME,ORDER_ROUTING_KEY,orderSuccess);//交换机名称 + 路由键 + 发送的消息(发的是DTO类参数对象噢,里面是落库后查出来的订单id)
+            rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME,ORDER_ROUTING_KEY,orderSuccess);//"交换机名称+路由键+发送的消息" (发的是DTO类参数对象噢,里面是落库后查出来的订单id)
             /* 发送 "30分钟延迟超时" 的消息 */
             rabbitTemplate.convertAndSend(TTL_EXCHANGE_NAME,TTL_ROUTING_KEY,orderSuccess);
         }catch (Exception e){
             log.error("发送MQ消息失败,但已成功下单,后续需人工排查,订单ID: {}",newOrderId, e);
-        }/* 总结:就是原本这里应该有一大坨业务要去做的,而且还很可能是分别去进行增删改查,等都执行完成-->再返回给controller层然后给前端,这就是说的同步+高耦合+响应慢)  TODO:自己的MQ总结精髓
-                这时候加入了MQ就是:把本的一大坨业务代码抽走,我这里只发消息给MQ就直接返回给controller然后走前端(这就是异步解耦)原来一大坨的就异步处理了呀:然后等监听器收到MQ发来的消息再去调用执行,不影响前面的返回嘛！ */
+        }
+        /* 总结: 就是原本这里应该有一大坨业务要去做的,而且还很可能是分别去进行增删改查,等都执行完成-->再返回给controller层然后给前端,这就是说的:同步+高耦合+响应慢)  TODO:自己的MQ总结精髓
+                这时候加入了MQ就是把原本的一大坨业务代码抽走,我这里只发消息给MQ就直接返回给controller然后走前端(即异步解耦:原来一大坨的就异步处理了)然后等监听器收到MQ发来的消息再去调用执行,不影响前面的快速返回了！ */
 
 
         //清空当前用户的购物车数据

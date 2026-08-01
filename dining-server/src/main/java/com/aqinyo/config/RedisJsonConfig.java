@@ -16,14 +16,15 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 
 
 
-/*   自定义Redis的序列化模板: 为了支持存储复杂的 Java 对象、Map、List 等复杂类型, 自动完成对象和 JSON 的互转 (下面写好后,之后都可以复用,注入自定义的redisTemplate模板了)
-*       ( 默认的StringRedisTemplate模板则只能传String类型 )
+/*  Redis配置类: 自定义Redis的序列化模板   【本质是配置Redis的行为】
+*    为了支持存储复杂的 Java 对象、Map、List 等复杂类型, 自动完成对象和 JSON 的互转
+*    ( 默认的StringRedisTemplate模板则只能传String类型 )   (下面写好后,之后都可以复用,注入自定义的redisTemplate模板了)
 */
 
 
 @Configuration
 @Slf4j
-public class RedisConfiguration {
+public class RedisJsonConfig {
     @Bean
     public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
         log.info("开始创建自定义的redis模板对象.....自定义的 Redis序列化配置 加载成功......");

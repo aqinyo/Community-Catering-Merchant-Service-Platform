@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class AliOssConfiguration {
+public class AliOssConfig {
 
     @Bean   // 设置为bean,当项目启动了,就能调用这个方法,取到方法返回出来的对象
     @ConditionalOnMissingBean   // 当没有这种bean再创建 (相当于做个判断而已)

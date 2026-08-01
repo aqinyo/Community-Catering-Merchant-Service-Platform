@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /*
- *   全局异常处理器: 拦截项目中所有 "Controller层" 抛出的异常,统一处理后(统一序列化为JSON格式)返回友好的错误信息给前端 / 即return Result.error("xxx"),避免直接暴露堆栈信息
+ *   全局异常处理器: 拦截项目中所有 "Controller层(即Web层)" 抛出的异常,统一处理后(统一序列化为JSON格式)返回友好的错误信息给前端 / 即return Result.error("xxx"),避免直接暴露堆栈信息
 */
 @RestControllerAdvice // 基于该注解实现全局异常处理。该注解相当于 @ControllerAdvice + @ResponseBody
 @Slf4j

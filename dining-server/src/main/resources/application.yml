@@ -5,8 +5,12 @@ spring:
   profiles:       # 利用 profiles功能 进行"动态配置切换"
     active: dev   # 激活 dev开发环境配置
 
+  # Spring Boot 2.6+ 默认禁止了Bean的循环依赖，设置为true可以允许循环引用，避免项目启动时因循环依赖报错
   main:
     allow-circular-references: true
+
+
+  # 在.yml上依旧是用引用符号替代,具体的值我们写在-dev.yml当中   (属于"属性占位符"引用方式,引用其他配置文件的属性,好处:环境隔离、集中管理、避免了硬编码)
 
   datasource:
     druid:
@@ -15,13 +19,13 @@ spring:
       username: ${Dining.datasource.username}
       password: ${Dining.datasource.password}
 
-  # 在.yml上依旧是用引用符号替代,具体的值我们写在-dev.yml当中
-  # (属于"属性占位符"引用方式,引用其他配置文件的属性,好处:环境隔离、集中管理、避免了硬编码)
+
   redis:
     host: ${Dining.redis.host}
     port: ${Dining.redis.port}
     password: ${Dining.redis.password}
     database: ${Dining.redis.database}
+
 
   rabbitmq:
     host: ${Dining.rabbitmq.host}
@@ -29,11 +33,21 @@ spring:
     username: ${Dining.rabbitmq.username}
     password: ${Dining.rabbitmq.password}
     virtual-host: ${Dining.rabbitmq.virtual-host}
-    # 消息可靠性: 生产者确认机制
-    publisher-confirm-type: correlated  # 异步回调  (这里可能不生效,可能是springBoot版本低的原因导致不生效)
-    publisher-returns: true   # 开启publisher-returns功能
+    # 消息可靠性: 生产者-消息确认机制 (confirm + returns) (Confirm机制对应 ConfirmCallback, Return机制对应 ReturnsCallback)
+    publisher-confirm-type: correlated    # 开启生产者 confirm 机制 (异步回调): 确认消息是否成功到达Exchange, 到达后会异步调用 ConfirmCallback 返回 ack/nack 给生产者
+    publisher-returns: true               # 开启生产者 returns 机制:         确认消息是否成功路由到Queue, "路由失败"时触发 ReturnsCallback 将消息退回 给生产者
     template:
-      mandatory: true   # 定义消息路由失败时的策略。 true:则调用 ReturnCallback; false:则直接丢弃消息
+      mandatory: true                     # 定义(return机制)"消息路由失败"的策略 --> true:则调用 ReturnsCallback / false:则直接丢弃消息
+    # 消息可靠性: 消费者-消息确认机制
+    listener:
+      simple:
+        acknowledge-mode: auto            # 自动确认模式
+        default-requeue-rejected: false   # 重试耗尽后不重新入队(防止无限循环), 直接reject/nack --> 进入fallback兜底队列
+        # 消息可靠性: 消费者 - 消费失败重试机制
+        retry:
+          enabled: true                   # 开启消费者本地重试: 指在消费者应用内存中拦截异常并重试，而不再重新入RabbitMQ  (常用于应对消费者的网络波动时)
+          max-attempts: 3                 # 最多重试3次          (本地重试只是第一道防线，并非保证消息100%能被消费！若重试耗尽仍失败则需要进入死信队列,发挥死信交换机的消息的兜底机制，这是最后的屏障，最后交由人工处理)
+          initial-interval: 3000          # 失败重试时间间隔3s
 
 
 mybatis:
@@ -44,6 +58,7 @@ mybatis:
     # 开启驼峰命名
     map-underscore-to-camel-case: true
 
+
 logging:
   level:
     com:
@@ -51,6 +66,7 @@ logging:
         mapper: debug
         service: info
         controller: info
+
 
 aqinyo:
   jwt:
@@ -64,11 +80,21 @@ aqinyo:
     user-ttl: 7200000
     user-token-name: authentication
 
+
   alioss:
     endpoint: ${Dining.alioss.endpoint}
     access-key-id: ${Dining.alioss.access-key-id}
     access-key-secret: ${Dining.alioss.access-key-secret}
     bucket-name: ${Dining.alioss.bucket-name}
+
+    # 图片上传安全与大小限制 (需在后端代码中结合 MultipartFile 进行拦截校验)
+    allowed-image-types: jpg,jpeg,png,gif,webp    # 允许的图片格式白名单 (严格限制后缀，防止恶意脚本/木马上传)
+    max-image-size: 5MB                           # 图片最大限制 (企业主流建议 2MB~5MB，兼顾清晰度与页面加载速度)
+
+    # 文件上传安全与大小限制 (需在后端代码中结合 MultipartFile 进行拦截校验)
+    max-file-size: 50MB                           # 普通文件最大限制 (如文档、短视频，超大文件建议前端采用分片上传)
+    allowed-file-types: pdf,doc,docx,xls,xlsx,mp4 # 允许的文件格式白名单
+
 
   wechat:
     appid: ${Dining.wechat.appid}

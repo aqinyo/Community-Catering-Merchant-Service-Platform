@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /*
- *   配置JSON消息转换器,替换默认的SimpleMessageConverter
+ *   配置RabbitMQ的JSON消息转换器,替换默认的SimpleMessageConverter   【本质是配置RabbitTemplate的行为】
  *   生产者-->发消息:(DTO类)自动转JSON,  消费者-->收消息:JSON自动转回Java对象
  *              序列化                         反序列化
  */
 
 @Configuration
-public class RabbitJsonConfig {
+public class RabbitMqJsonConfig {
 
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {

@@ -26,7 +26,7 @@ import java.util.List;
 
 @Configuration
 @Slf4j
-public class WebMvcConfiguration extends WebMvcConfigurationSupport {
+public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;  //依赖注入admin端jwt令牌校验的拦截器
