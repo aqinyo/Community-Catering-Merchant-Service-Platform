@@ -26,18 +26,27 @@ import java.util.Set;
 public class DishController {
 
     @Autowired
-    private DishService dishservice;
+    private DishService dishservice;//依赖注入
     @Autowired
-    private RedisTemplate redisTemplate;    // 引入Redis,所以这里依赖注入redis的模板类(即Redis的java客户端-->连接并使用Redis服务端的)
+    private RedisTemplate redisTemplate;    // 依赖注入的是自定义的RedisTemplate (也是Redis的java客户端-->连接并使用Redis服务端的)
                                             // 可用自定义模板redisTemplate(当前选用)  或  默认string类型的模板StringRedisTemplate
+
+
+    /*   抽取删除Redis缓存方法: 全删菜品数据缓存   */
+    private void CleanRedis(String pattern) {   // 因为只在本类中使用,所以是私有属性
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
+    }
+
+
     /*  新增菜品  */
     @PostMapping
     @ApiOperation("新增菜品")
     public Result<String> add(@RequestBody DishDTO dishDTO){    // 依旧是 DTO类 接收前端请求发来的数据 (json数据则都用@RequestBody给形参加上)
         log.info("新增菜品：{}", dishDTO);
 
-        // 删除Redis旧的缓存数据 (精确删除)
-        String key = "dish_" + dishDTO.getCategoryId(); // key通过接收前端传数据过来的DTO类中,去get里面的分类id(然后用于下面的删除Redis缓存)
+        // 精准删除 Redis旧的缓存数据
+        String key = "Dish_categoryId=" + dishDTO.getCategoryId(); // key通过接收前端传数据过来的DTO类中,去get里面的分类id(然后用于下面的删除Redis缓存)
         CleanRedis(key);  // 删除Redis里面的缓存 (每次新增都是要执行)
 
         dishservice.addDishWithFlavor(dishDTO);
@@ -60,7 +69,7 @@ public class DishController {
         log.info("菜品批量删除：{}", ids);
 
         // 删除redis中全部缓存的菜品数据
-        CleanRedis("dish_*");
+        CleanRedis("Dish_*");
 
         dishservice.deleteBatch(ids);
         return Result.success();
@@ -91,7 +100,7 @@ public class DishController {
         log.info("修改菜品：{}", dishDTO);
 
         // 删除redis中全部缓存的菜品数据
-        CleanRedis("dish_*");
+        CleanRedis("Dish_*");
 
         dishservice.updateDishWithFlavor(dishDTO);
         return Result.success();
@@ -104,16 +113,10 @@ public class DishController {
         log.info("启用或禁用菜品：{}, {}",status, id);
 
         // 删除redis中全部缓存的菜品数据
-        CleanRedis("dish_*");
+        CleanRedis("Dish_*");
         
         dishservice.startOrStop(status, id);
         return Result.success();
-    }
-
-    /*   暴力全删redis中缓存的菜品数据   */     // 依旧是抽取方法出来,方便一行直接调用-->优雅
-    private void CleanRedis(String pattern) {   // 因为只在本类中使用,所以是私有属性
-        Set keys = redisTemplate.keys(pattern);
-        redisTemplate.delete(keys);
     }
 
 }

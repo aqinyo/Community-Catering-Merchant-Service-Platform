@@ -104,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDelayMessageDTO orderSuccess = new OrderDelayMessageDTO();
         orderSuccess.setOrderId(newOrderId);
+
         try {   //这里捕获异常 --是优化--> 防止发消息失败而影响了主业务  (还好加了:一开始还真异常了-->RabbitMQ消息收发的序列化异常导致的)
             /* 发送 "下单成功" 的消息 */
             rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME,ORDER_ROUTING_KEY,orderSuccess);//"交换机名称+路由键+发送的消息" (发的是DTO类参数对象噢,里面是落库后查出来的订单id)

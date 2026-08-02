@@ -15,15 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "user端-店铺相关接口")
 @Slf4j
 public class ShopController {
+
     public static final String KEY = "SHOP_STATUS";
+
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;  //依赖注入的是:自定义的RedisTemplate
 
     /*   查询 店铺的营业状态   */
     @GetMapping("/status")
     @ApiOperation("")
     public Result<Integer> getStatus(){
-        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
+        Integer status = (Integer) redisTemplate.opsForValue().get(KEY); // Spring Data Redis手动式 缓存至 Redis
         log.info("获取店铺的营业状态：{}", status == 1 ? "营业中" : "打烊中");
         return Result.success(status);
     }

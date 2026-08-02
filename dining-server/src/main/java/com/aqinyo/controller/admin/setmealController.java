@@ -40,7 +40,7 @@ public class setmealController {
 
     /*   新增套餐   */
     @PostMapping
-    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")    //key: setmealCache::100...
+    @CacheEvict(cacheNames = "SetMeal", key = "#setmealDTO.categoryId")  //key: setmealCache::100...  (注: 注解式缓存是不依赖注入RedisTemplate的噢！依赖的是Spring底层提供的CacheManager缓存管理器)
     @ApiOperation("新增套餐")
     public Result<String> add(@RequestBody SetmealDTO setmealDTO){
         log.info("新增套餐：{}", setmealDTO);
@@ -50,7 +50,7 @@ public class setmealController {
 
     /*   修改套餐   */
     @PutMapping
-    @CacheEvict(cacheNames = "setmealCache", allEntries = true) // @CacheEvict删除缓存,allEntries=true 指删除setmealCache下的所有键值对(allEntries)
+    @CacheEvict(cacheNames = "SetMeal", allEntries = true) // @CacheEvict删除缓存,allEntries=true 指删除setmealCache下的所有键值对(allEntries)
     @ApiOperation("修改套餐")
     public Result<String> update(@RequestBody SetmealDTO setmealDTO){
         log.info("修改套餐：{}", setmealDTO);
@@ -69,7 +69,7 @@ public class setmealController {
 
     /*   批量删除套餐   */
     @DeleteMapping
-    @CacheEvict(cacheNames = "setmealCache", allEntries = true) // @CacheEvict删除缓存,allEntries=true 指删除setmealCache下的所有键值对(allEntries)
+    @CacheEvict(cacheNames = "SetMeal", allEntries = true) // @CacheEvict删除缓存,allEntries=true 指删除setmealCache下的所有键值对(allEntries)
     @ApiOperation("批量删除套餐")
     public Result<String> deleteByIds(@RequestParam List<Long> ids){
         log.info("批量删除套餐：{}", ids);
@@ -79,7 +79,7 @@ public class setmealController {
 
     /*   启用、禁用套餐   */
     @PostMapping("/status/{status}")
-    @CacheEvict(cacheNames = "setmealCache", allEntries = true) // @CacheEvict删除缓存,allEntries=true 指删除setmealCache下的所有键值对(allEntries)
+    @CacheEvict(cacheNames = "SetMeal", allEntries = true) // @CacheEvict删除缓存,allEntries=true 指删除setmealCache下的所有键值对(allEntries)
     @ApiOperation("套餐起售或禁售")
     public Result<String> startOrStop(@PathVariable("status") int status, Long id){
         log.info("套餐的起售或禁售：{}, {}", status, id);

@@ -17,6 +17,7 @@
 - 环境配置: 多环境yml（dev、test、pro）
 - 测试与规范: Junit5 + Mockito、Apifox
 - 接口文档: Knife4j + Swagger2
+- 定时任务: Spring Task
 
 #### 运行环境
 - 操作系统: Windows 10
@@ -35,7 +36,7 @@
 
 #### 亮点与细节
 1. 规范开发、JWT鉴权、DTO/VO/实体数据隔离、mapper自动代理、RESTful接口规范、 统一响应格式:Result封装
-2. 引入 Redis 优化热点数据缓存
+2. 引入 Redis 优化热点数据缓存，并基于Spring Task 实现缓存预热的定时任务（手动式缓存：菜品、店铺状态 / 注解式缓存：套餐）
 3. RabbitMQ 异步解耦与延迟消息，保证消息可靠性，并完成全局异常消息的兜底机制
 4. 集成阿里云 OSS 图片云端存储
 5. 公共字段自动填充（利用自定义注解标识,统一做AOP）
@@ -63,8 +64,8 @@
 用户端 C端: （8个接口）
 
     微信登录
-    查询菜品        （根据"分类id"查询）    --> 引入Redis （Spring Data Redis 手动式）
-    查询套餐                               --> 引入Redis （Spring Cache 注解式）
+    查询菜品        （根据"分类id"查询）    --> 引入Redis （Spring Data Redis 手动式）【做了缓存预热】
+    查询套餐                               --> 引入Redis （Spring Cache 注解式）   【做了缓存预热】
     查询分类
     查询店铺状态                           --> 缓存至Redis （Spring Data Redis 手动式）
     管理购物车      （增删查、清空购物车）

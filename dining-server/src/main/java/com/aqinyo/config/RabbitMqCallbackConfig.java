@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 /*  RabbitMQ配置类: 生产者消息可靠性回调 【本质是配置RabbitTemplate的行为】
- *   ConfirmCallback --> 确认消息是否成功到达 Exchange (返回ack/nack 给生产者)
- *   ReturnsCallback --> 确认消息是否成功路由到 Queue  (路由失败时退回消息 给生产者)
- *   ( yml负责开启开关 / 本类负责接收回调并处理(即通过log日志输出显示给我)  --> 实现开关与处理分离 )
+ *    ConfirmCallback --> 确认消息是否成功到达 Exchange (返回ack/nack 给生产者)
+ *    ReturnsCallback --> 确认消息是否成功路由到 Queue  (路由失败时退回消息 给生产者)
+ *    ( yml负责开启开关 / 本类负责接收回调并处理(即通过log日志输出显示给我)  --> 实现开关与处理分离 )
  */
 
 @Slf4j
@@ -22,7 +22,7 @@ public class RabbitMqCallbackConfig implements RabbitTemplate.ConfirmCallback, R
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    /*   初始化方法: @PostConstruct 确保该方法在 RabbitTemplate 被依赖注入后,立即执行 (将当前实例注册为RabbitTemplate的回调处理器)  */
+    /*   @PostConstruct: 确保该方法在依赖注入后(即RabbitTemplate被依赖注入后),立即执行该方法   (方法内实现:将当前实例注册为RabbitTemplate的回调处理器)  */
     @PostConstruct
     public void init() {
         rabbitTemplate.setConfirmCallback(this); //将当前类实现的 ConfirmCallback接口 注册给 RabbitTemplate: 用于处理消息到达 Exchange 的确认回调

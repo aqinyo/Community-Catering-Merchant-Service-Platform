@@ -21,23 +21,21 @@ import java.util.List;
 
 @RestController("userDishController")
 @RequestMapping("/user/dish")
-@Slf4j
 @Api(tags = "user端-菜品浏览接口")
 public class DishController {
 
     @Autowired
     private DishService dishService;
     @Autowired
-    RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;    //依赖注入的是:自定义的RedisTemplate
 
     /*   根据 "分类id" 查询菜品   */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
     public Result<List<DishVO>> list(Long categoryId) {
 
-        /*   这里用的是原始的手动式依赖注入的redis操作方法(这里偷懒了写在Controller层)  /  到 "套餐模块" 时用上 注解式操作redis 更加简洁了   */
-        // 构造redis中的key,规则: Dish(分类id)  -->  分类(key)下挂着该套餐对应的菜品(value)
-        String key = "Dish (categoryId = " + categoryId + ")";
+        // 构造redis中key的规则: Dish_categoryId= --> 分类(key)下挂着该套餐对应的菜品(value)
+        String key = "Dish_categoryId=" + categoryId;
 
         // 查询redis中是否存在菜品数据
         List<DishVO> dishVOList = (List<DishVO>) redisTemplate.opsForValue().get(key);// 放进去的数据类型 = 取出来的数据类型
@@ -46,6 +44,7 @@ public class DishController {
             return Result.success(dishVOList);
         }
 
+        // 这里的实体类Dish仅作为封装数据库查询条件的数据载体
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);
         dish.setStatus(StatusConstant.ENABLE);

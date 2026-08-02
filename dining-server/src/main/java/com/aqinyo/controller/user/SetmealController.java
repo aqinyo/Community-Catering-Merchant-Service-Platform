@@ -28,7 +28,7 @@ public class SetmealController {
     /*   条件查询   */
     @GetMapping("/list")                                            /*   注意:一般这个缓存注解写在service层的,这里偷懒写在controller层   */
     @Cacheable(cacheNames = "SetMeal", key = "#categoryId") //如果形参是user,则key写成#user.id     (最终效果是-->SetMeal::categoryId的值)
-    @ApiOperation("根据分类id查询套餐")
+    @ApiOperation("根据分类id查询套餐")                         //注: 注解式缓存是不依赖注入RedisTemplate的噢！依赖的是Spring底层提供的CacheManager缓存管理器
     public Result<List<Setmeal>> list(Long categoryId) {
         Setmeal setmeal = new Setmeal();
         setmeal.setCategoryId(categoryId);

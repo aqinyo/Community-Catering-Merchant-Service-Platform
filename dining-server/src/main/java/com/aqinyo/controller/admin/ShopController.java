@@ -19,14 +19,14 @@ public class ShopController {
     public static final String KEY = "SHOP_STATUS"; //这样子把key单独列出来依旧是为了解耦和优雅
 
     @Autowired
-    private RedisTemplate redisTemplate;    //依赖注入自定义Redis模板
+    private RedisTemplate redisTemplate;    //依赖注入自定义的RedisTemplate
 
     /*   设置 店铺的营业状态   */
     @PutMapping("/{status}")
     @ApiOperation("设置店铺的营业状态")
     public Result<String> setStatus(@PathVariable int status){  //上面请求路径{status}带有{}是路径参数,要加@PathVariable注解 (/status这个就是普通字符串的请求路径)
         log.info("设置店铺营业状态：{}", status == 1 ? "营业中" : "打烊中");
-        redisTemplate.opsForValue().set(KEY, status);   // 设置 key value (因为这个数据是存到Redis的)
+        redisTemplate.opsForValue().set(KEY, status);   // Spring Data Redis手动式 缓存至 Redis
         return Result.success();
     }
 
@@ -34,7 +34,7 @@ public class ShopController {
     @GetMapping("/status")
     @ApiOperation("获取店铺的营业状态")
     public Result<Integer> getStatus(){
-        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);    //强转的类型与上面设置的类型保持一致即可
+        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);    // Spring Data Redis手动式 缓存至 Redis (强转的类型与上面设置的类型保持一致即可)
         log.info("获取店铺的营业状态：{}", status == 1 ? "营业中" : "打烊中");
         return Result.success(status);
     }
