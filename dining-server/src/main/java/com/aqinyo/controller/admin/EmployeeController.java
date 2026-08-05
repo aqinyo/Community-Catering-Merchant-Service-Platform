@@ -88,20 +88,21 @@ public class EmployeeController {                                               
     /*  启用/禁用 员工账号  */
     @PostMapping("/status/{status}")    //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
     @ApiOperation("启用或禁用员工账号")      //API的描述
-    public Result<String> startOrStop(@PathVariable int status, Long id){   //这里是属于路径参数,所以加@PathVariable,而且要注意这里的: 形参名 = 接口文档的参数名
+    public Result<String> startOrStop(@PathVariable int status, Long id){ //要注意这里的: 形参名 = 接口文档的参数名
         log.info("启用或禁用员工账号：{}，{}", status, id);
         employeeService.startOrStop(status, id);
         return Result.success();    // 返回Result结果集类的无参success方法 (这里不用返回数据,所以调用的是无参)
     }
 
     /*  查询员工信息 (根据id)  */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")    //带有{}这里是属于路径参数,所以加@PathVariable,用于提取{}里面的参数
     @ApiOperation("根据id查询员工信息")
     public Result<Employee> getById(@PathVariable long id){
         log.info("回显员工信息：{}", id);
         Employee employee = employeeService.getById(id);
         return Result.success(employee);    // 这里则是返回Result结果集类的有参success方法了 (因为携带了实体类employee要返回给前端)
     }              /*  形参这偷懒传了实体类employee,规范的应是-->实体类转换为VO类(对象属性拷贝)然后再由Result的data携带给前端 ; (转换为VO类就能隐藏密码、身份证等核心信息,而直接返回实体类会全暴露给前端)*/
+
 
     /*  修改员工信息      (这里修改是"先查后改",涉及到两个接口的)  */
     @PutMapping

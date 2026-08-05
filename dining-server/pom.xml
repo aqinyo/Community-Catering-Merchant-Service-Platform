@@ -32,11 +32,13 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- 添加server模块,所依赖的 Spring Boot 框架 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- Spring Test 框架依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -50,23 +52,27 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spring MVC 框架 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>compile</scope>
         </dependency>
 
+        <!-- MySQL 连接驱动依赖 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Spring Boot 整合 MyBatis 框架的起步依赖 -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- Lombok 框架 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -82,16 +88,17 @@
             <artifactId>fastjson</artifactId>
         </dependency>
 
+        <!-- PageHelper 分页插件的依赖 -->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- AOP切面的依赖 -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
@@ -114,6 +121,7 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!-- jaxb-api 依赖: 用于解决Java11+版本中jaxb被移除后，Knife4j/Swagger等组件因缺少该模块而引发的NoClassDefFoundError异常 -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>

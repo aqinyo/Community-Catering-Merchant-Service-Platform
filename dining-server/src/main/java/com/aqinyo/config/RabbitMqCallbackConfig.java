@@ -1,12 +1,11 @@
-package com.aqinyo.config;
+package com.aqinyo.config;  // package声明当前类所在的包
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;   // import导入当前类中需要依赖的外部类和接口
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 
 /*  RabbitMQ配置类: 生产者消息可靠性回调 【本质是配置RabbitTemplate的行为】
@@ -22,8 +21,8 @@ public class RabbitMqCallbackConfig implements RabbitTemplate.ConfirmCallback, R
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    /*   @PostConstruct: 确保该方法在依赖注入后(即RabbitTemplate被依赖注入后),立即执行该方法   (方法内实现:将当前实例注册为RabbitTemplate的回调处理器)  */
-    @PostConstruct
+    /*   将当前实例注册为RabbitTemplate的回调处理器  */
+    @PostConstruct  // @PostConstruct: 确保该方法在依赖注入后(即RabbitTemplate被依赖注入后),立即执行该方法
     public void init() {
         rabbitTemplate.setConfirmCallback(this); //将当前类实现的 ConfirmCallback接口 注册给 RabbitTemplate: 用于处理消息到达 Exchange 的确认回调
         rabbitTemplate.setReturnsCallback(this); //将当前类实现的 ReturnsCallback接口 注册给 RabbitTemplate: 用于处理消息路由失败被退回的回调

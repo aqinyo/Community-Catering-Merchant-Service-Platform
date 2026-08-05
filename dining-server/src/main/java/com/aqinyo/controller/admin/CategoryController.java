@@ -60,7 +60,7 @@ public class CategoryController {
     }
 
     /*  启用、禁用分类  */
-    @PostMapping("/status/{status}")
+    @PostMapping("/status/{status}")    //带有{}这里是属于路径参数,所以加@PathVariable,用于提取{}里面的参数
     @ApiOperation("启用禁用分类")
     public Result<String> startOrStop(@PathVariable("status") Integer status, Long id){
         categoryService.startOrStop(status,id);

@@ -76,7 +76,7 @@ public class DishController {
     }
 
     /*  查询菜品 (根据id)  */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")    //带有{}这里是属于路径参数,所以加@PathVariable,用于提取{}里面的参数
     @ApiOperation("根据id查询菜品")
     public Result<DishVO> getById(@PathVariable Long id){
         log.info("根据id查询菜品: {}", id);

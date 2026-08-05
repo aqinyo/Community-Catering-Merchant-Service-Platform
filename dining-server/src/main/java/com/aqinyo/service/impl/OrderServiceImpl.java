@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
 
     /*   用户端 - 提交订单   */
     @Override
-    @Transactional  //开启事务注解-->为了保证数据一致性  (若订单表的数据插入成功,而与其相关联的订单明细表插入失败,则数据不一致了-->因此设涉及到这类情况的都需要开启一个事务注解)
+    @Transactional //开启事务注解:为了保证数据一致性  (若订单表插入成功,而与其关联的订单明细表插入失败,则数据不一致了-->因此:一个业务方法内涉及到"多张表的写操作"时,都需要开启事务注解)
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
         /* 处理各种业务异常 (2个) */
             // 1、地址是否为空？
