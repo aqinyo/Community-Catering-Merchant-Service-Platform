@@ -1,21 +1,19 @@
-server:
-  port: 8080  # dev环境也是8080端口(因为激活之后会覆盖原本的端口,所以干脆dev和原本的一致) / test环境是8081端口 / pro环境是8082端口
+server:       # 设置 Spring Boot 服务的业务端口
+  port: 8080  # dev环境也是8080端口 (因为激活之后会覆盖原本的端口,所以干脆dev和原本的一致) / test环境是8081端口 / pro环境是8082端口
 
-spring:
+
+spring:       # Spring Boot 服务的配置 (一定要注意层级关系,不能写错,必须是在Spring下的)
+
   profiles:       # 利用 profiles功能 进行"动态配置切换"
     active: dev   # 激活 dev开发环境配置
 
-  # Spring Boot 2.6+ 默认禁止了Bean的循环依赖，设置为true可以允许循环引用，避免项目启动时因循环依赖报错
   main:
-    allow-circular-references: true
-
+    allow-circular-references: true   # Spring Boot 2.6+ 默认禁止了Bean的循环依赖，设置为true可以允许循环引用，避免项目启动时因循环依赖报错
 
   # 在.yml上依旧是用引用符号替代,具体的值我们写在-dev.yml当中   (属于"属性占位符"引用方式,引用其他配置文件的属性,好处:环境隔离、集中管理、避免了硬编码)
-
   datasource:
-    druid:
       driver-class-name: ${Dining.datasource.driver-class-name}
-      url: jdbc:mysql://${Dining.datasource.host}:${Dining.datasource.port}/${Dining.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: "jdbc:mysql://${Dining.datasource.host}:${Dining.datasource.port}/${Dining.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true"
       username: ${Dining.datasource.username}
       password: ${Dining.datasource.password}
 
@@ -50,10 +48,11 @@ spring:
           initial-interval: 3000          # 失败重试时间间隔3s
 
 
+# MyBatis应该也是要配置的,但我使用的Mapper自动代理很规范(目录结构对应上、XML文件全限定类名也对应上),所以这里就不需要配置了,都与默认的MyBatis配置内容一致
 mybatis:
   # mapper配置文件
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.aqinyo.entity
+  mapper-locations: classpath:mapper/*.xml  # 指定MyBatis的Mapper XML文件位置
+  type-aliases-package: com.aqinyo.entity   # 给指定包下的实体类起别名，配置后，在Mapper XML文件中写resultType等参数时，可以直接写实体类名，不需要写全限定类名，比如原来要写com.aqinyo.entity.User，现在直接写User就行
   configuration:
     # 开启驼峰命名
     map-underscore-to-camel-case: true
@@ -100,4 +99,25 @@ aqinyo:
     appid: ${Dining.wechat.appid}
     secret: ${Dining.wechat.secret}
 
+
+# Actuator
+management:
+  server:
+    port: 8088    # 把 Actuator 迁移到独立的 8088 端口 (与业务端口分离)
+
+  endpoints:
+    web:          # 配置 Web端点
+      exposure:                   # 暴露Actuator的监控端点给Web访问
+        include: health,info,metrics,beans,conditions,threaddump   # 若是'*'则表示暴露所有端点
+
+  endpoint:
+    health:       # 配置 健康检查端点
+      show-details: always        # 显示健康检查的详细信息
+      probes:
+        enabled: true             # 显示开启 K8s 探针支持
+      diskspace:
+        enabled: true             # 显示开启 磁盘空间检查
+        threshold: 10MB           # 剩余空间小于10MB时标记为不健康
+    env:          # 配置 Env(环境变量)端点
+      show-values: always         # 显示环境变量的任何具体值 (注意:在生产环境这里必须是never!)
 
