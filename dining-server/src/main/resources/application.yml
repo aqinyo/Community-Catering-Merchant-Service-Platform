@@ -100,24 +100,25 @@ aqinyo:
     secret: ${Dining.wechat.secret}
 
 
-# Actuator
+# Actuator  (目前可视化是通过网页简单验证,为后续生产环境可视化监控提供支持,提前打好基础: 云监控 / 引入Prometheus + Grafana)
 management:
   server:
-    port: 8088    # 把 Actuator 迁移到独立的 8088 端口 (与业务端口分离)
+    port: 8088    # 监控端口和业务端口分离 [应对"端点暴露"问题]
 
   endpoints:
     web:          # 配置 Web端点
-      exposure:                   # 暴露Actuator的监控端点给Web访问
-        include: health,info,metrics,beans,conditions,threaddump   # 若是'*'则表示暴露所有端点
+      base-path: /aqinyo_actuator   # 修改默认 /actuator 路径 [应对"端点暴露"问题]
+      exposure:                     # 暴露Actuator的监控端点给Web访问
+        include: health,info,metrics,beans,conditions,threaddump   # 可以按需选择端点暴露 (高危端点：env、heapdump、threaddump) [应对"端点暴露"问题]
 
   endpoint:
     health:       # 配置 健康检查端点
-      show-details: always        # 显示健康检查的详细信息
+      show-details: always          # 显示健康检查的详细信息
       probes:
-        enabled: true             # 显示开启 K8s 探针支持
+        enabled: true               # 显示开启 K8s 探针支持
       diskspace:
-        enabled: true             # 显示开启 磁盘空间检查
-        threshold: 10MB           # 剩余空间小于10MB时标记为不健康
+        enabled: true               # 显示开启 磁盘空间检查
+        threshold: 10MB             # 剩余空间小于10MB时标记为不健康
     env:          # 配置 Env(环境变量)端点
-      show-values: always         # 显示环境变量的任何具体值 (注意:在生产环境这里必须是never!)
+      show-values: always           # 显示环境变量的任何具体值 (注意:在生产环境这里必须是never!)[应对"敏感数据暴露"问题]
 
