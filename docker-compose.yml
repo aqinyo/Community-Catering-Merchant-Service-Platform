@@ -31,8 +31,8 @@ services:
     # 数据卷，持久化redis数据
     volumes:
       - redis_data:/data              # 命名卷（推荐，不用管宿主机路径，SELinux问题少）
-    healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "123456", "ping" ]  # 使用redis‑cli ping探测；必须携带密码；返回PONG代表服务真正可用；不要只探测端口 (搭配Actuator监控发挥作用了)
+    healthcheck:  # 此时Actuator提供的/actuator/health接口正好可以被Compose用作健康检查/healthcheck的目标 (即使没有云监控/P+G的可视化工具)
+      test: [ "CMD", "redis-cli", "-a", "123456", "ping" ]  # 使用redis‑cli ping探测；必须携带密码；返回PONG代表服务真正可用；不要只探测端口
       interval: 10s                   # 每10s执行一次健康探测
       timeout: 5s                     # 探测5s没响应判定单次失败
       retries: 3                      # 连续3次失败，标记容器unhealthy
