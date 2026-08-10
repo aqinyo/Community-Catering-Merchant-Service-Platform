@@ -5,7 +5,7 @@ server:       # 设置 Spring Boot 服务的业务端口
 spring:       # Spring Boot 服务的配置 (一定要注意层级关系,不能写错,必须是在Spring下的)
 
   profiles:       # 利用 profiles功能 进行"动态配置切换"
-    active: dev   # 激活 dev开发环境配置
+    active: dev   # 激活 dev开发环境配置  (打包依然正常打包，不改动IDEA内激活配置。虚拟机/线上 部署启动jar时，再切换为 pro 激活即可)
 
   main:
     allow-circular-references: true   # Spring Boot 2.6+ 默认禁止了Bean的循环依赖，设置为true可以允许循环引用，避免项目启动时因循环依赖报错
