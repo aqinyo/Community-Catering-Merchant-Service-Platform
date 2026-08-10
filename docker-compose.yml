@@ -61,6 +61,6 @@ services:
       start_period: 60s               # rabbitmq启动慢，给它留足初始化等待时间
 
 
-  volumes:   # 定义命名卷：声明这两个数据卷的存在，docker托管存储，规避SELinux目录权限问题
-    redis_data:
-    rabbitmq_data:
+volumes:   # 定义命名卷：声明这两个数据卷的存在，docker托管存储，规避SELinux目录权限问题 (且volumes 和 services 同级)
+  redis_data:
+  rabbitmq_data:
