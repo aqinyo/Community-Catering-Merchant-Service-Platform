@@ -143,12 +143,27 @@
 
     <!-- 这里主要作用是: 将 Spring Boot 项目打包成可执行的 jar包 -->
     <build>     <!-- <build> 标签：用于配置项目的构建过程 -->
+
         <plugins>   <!-- <plugins> 标签：用于声明构建时需要使用的 Maven 插件集合 -->
             <plugin>    <!-- <plugin> 标签：声明具体的 Maven 插件 -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>   <!-- spring-boot-maven-plugin：Spring Boot 提供的Maven插件 -->
             </plugin>
         </plugins>
+
+        <!-- 新增 resources 的资源拷贝配置  (部署时需要拷贝到容器中，不然找不到XML,Mapper就调用失败) -->
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
     </build>
 
 
