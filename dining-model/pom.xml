@@ -29,9 +29,10 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <!-- model 模块只需要注解：@Schema、@Tag 等 OpenAPI3 注解只用这个轻量包，不带自动配置 (父工程虽有引用但更像声明依赖，在子模块中才是实际引用) -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-common</artifactId>
         </dependency>
 
     </dependencies>

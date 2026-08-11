@@ -103,23 +103,16 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
 
-        <!-- knife4j 是用于 "自动生成接口文档" 的依赖 (是Swagger的增强UI) (补充:底层是springfox,且部署时还因SpringBoot2.6+与Springfox3.0不兼容导致springfox组件初始化失败而报错，所以依赖迁移到下面两个结合使用了) -->
+        <!-- knife4j 是用于 "自动生成接口文档" 的依赖 (是Swagger的增强UI) (补充:底层是springfox,且部署时还因SpringBoot2.6+与Springfox3.0不兼容导致springfox组件初始化失败而报错，所以依赖迁移到下面发文档依赖使用了) -->
        <!-- <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
         </dependency> -->
 
-        <!-- 1. SpringDoc 是用于"自动生成OpenAPI3文档" 的依赖 【核心！必选！生成文档从knife4j迁移到SpringDoc】 -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.15</version>
-        </dependency>
-        <!-- 2. Knife4j OpenAPI3 UI增强  【可选，与SpringDoc搭配，就是让SpringDoc生成的文档界面好看好用点，SpringDoc原生界面很简陋】 -->
+        <!-- Knife4j 4+ 是 SpringDoc OpenAPI 3 的 UI增强  【让SpringDoc生成的文档界面好看好用点，SpringDoc原生界面很简陋 ; 底层已自动内置SpringDoc】 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-            <version>4.3.0</version>
         </dependency>
 
         <!-- 基于Spring Data Redis 操作 Redis 的起步依赖 (推荐使用,不推荐Jedis) -->

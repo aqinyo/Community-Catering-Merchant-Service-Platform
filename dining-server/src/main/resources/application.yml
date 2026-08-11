@@ -8,7 +8,7 @@ spring:       # Spring Boot 服务的配置 (一定要注意层级关系,不能�
     active: dev   # 激活 dev开发环境配置  (打包依然正常打包，不改动IDEA内激活配置。虚拟机/线上 部署启动jar时，再切换为 pro 激活即可)
 
   main:
-    allow-circular-references: true   # Spring Boot 2.6+ 默认禁止了Bean的循环依赖，设置为true可以允许循环引用，避免项目启动时因循环依赖报错
+    allow-circular-references: true   # 应对PageHelper 分页插件自动配置类的循环依赖: SpringBoot2.6+默认禁止了Bean的循环依赖，设为true允许循环引用，避免项目启动时因循环依赖报错(但治标不治本)
 
   # 在.yml上依旧是用引用符号替代,具体的值我们写在-dev.yml当中   (属于"属性占位符"引用方式,引用其他配置文件的属性,好处:环境隔离、集中管理、避免了硬编码)
   datasource:

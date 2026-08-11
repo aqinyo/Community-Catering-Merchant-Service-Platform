@@ -87,10 +87,17 @@
                 <version>${pagehelper}</version>
             </dependency>
 
+            <!-- knife4j 4+  openapi3 启动器: server 子模块使用 -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-spring-boot-starter</artifactId>
-                <version>${knife4j}</version>
+                <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+                <version>4.3.0</version>    <!-- 使用openapi3对应版本 -->
+            </dependency>
+            <!-- springdoc: common、model 子模块使用（仅注解@Schema）（父工程这虽有引用，但更像声明依赖，在子模块中才是实际引用） -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-common</artifactId>
+                <version>2.2.0</version>
             </dependency>
 
             <dependency>
