@@ -20,7 +20,7 @@
 - 定时任务: Spring Task  (若定时任务多，就引入XXL-JOB中间件)
 - 监控: Actuator 
 
-#### 本地开发-运行环境
+### 本地开发-运行环境
 - 操作系统: Windows 10
 - 开发工具: IntelliJ IDEA（Amazon Corretto 1.8.0_452）
 - 数据库: MySQL 8.0 （本地）
