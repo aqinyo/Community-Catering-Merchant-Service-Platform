@@ -6,14 +6,17 @@ services:
     container_name: dining-app
     ports:
       - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai               # 设置系统环境变量。把容器内的时区设为上海，这能防止项目输出到日志文件的时间有8h时间差
+
     depends_on:                       # 启动顺序依赖：先启动 redis、rabbitmq 容器，再启动 app 容器
-      redis:                          # 但depends_on仅是控制启动顺序，不等待服务就绪，Redis、RabbitMQ启动需要时间(所以compose要搭配Actuator暴露的指标进行healthcheck才行)
+      redis:                          # 但depends_on仅是控制启动顺序，不等待服务就绪，Redis、RabbitMQ启动需要时间(所以要搭配healthcheck才行)
         condition: service_healthy    # 【新增】必须等到 Redis 健康检查通过（端口可用）后才启动 App
       rabbitmq:
         condition: service_healthy    # 【新增】必须等到 RabbitMQ 健康检查通过（端口可用）后才启动 App (最后部署也是因为加了这个成功了！)
-    environment:
-      TZ: Asia/Shanghai               # 设置系统环境变量。把容器内的时区设为上海，这能防止项目输出到日志文件的时间有8h时间差
+
     restart: always                   # 重启策略：如果 app 容器(我的SpringBoot项目)意外重启 / Down掉，Docker 会自动把它重新拉起来
+
     # 挂载外部配置：把Linux服务器当前目录./config/application-pro.yml这个生产环境配置文件,挂载到容器内部的/app/config/application-pro.yml路径 (好处:可以在外部修改SpringBoot的配置,而不需要重新打包成镜像,仅需重启容器即可生效)
     volumes:
       - ./config/application-pro.yml:/app/config/application-pro.yml
