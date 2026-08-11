@@ -7,8 +7,8 @@ import com.aqinyo.result.PageResult;
 import com.aqinyo.result.Result;
 import com.aqinyo.service.DishService;
 import com.aqinyo.vo.DishVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,7 +22,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("admin/dish")
 @Slf4j
-@Api(tags = "admin端-菜品相关接口")
+@Tag(name = "admin端-菜品相关接口")
 public class DishController {
 
     @Autowired
@@ -41,7 +41,7 @@ public class DishController {
 
     /*  新增菜品  */
     @PostMapping
-    @ApiOperation("新增菜品")
+    @Operation(summary = "新增菜品")
     public Result<String> add(@RequestBody DishDTO dishDTO){    // 依旧是 DTO类 接收前端请求发来的数据 (json数据则都用@RequestBody给形参加上)
         log.info("新增菜品：{}", dishDTO);
 
@@ -55,7 +55,7 @@ public class DishController {
 
     /*  分页查询菜品  */
     @GetMapping("/page")
-    @ApiOperation("菜品分页查询")
+    @Operation(summary = "菜品分页查询")
     public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO){  // 依旧是 DTO类 接收前端请求发来的数据
         log.info("菜品分页查询：{}", dishPageQueryDTO);
         PageResult pageResult = dishservice.pageQuery(dishPageQueryDTO);/* controller层是调用service层的方法去进行业务处理操作的 (处理DTO类数据) */
@@ -64,7 +64,7 @@ public class DishController {
 
     /*  批量删除菜品  */
     @DeleteMapping
-    @ApiOperation("菜品批量删除")     // 加@RequestParam因为是动态删除,单个也可以删
+    @Operation(summary = "菜品批量删除")     // 加@RequestParam因为是动态删除,单个也可以删
     public Result<String> delete(@RequestParam List<Long> ids){   // 采用list集合是因为前端请求涉及多个参数
         log.info("菜品批量删除：{}", ids);
 
@@ -77,7 +77,7 @@ public class DishController {
 
     /*  查询菜品 (根据id)  */
     @GetMapping("/{id}")    //带有{}这里是属于路径参数,所以加@PathVariable,用于提取{}里面的参数
-    @ApiOperation("根据id查询菜品")
+    @Operation(summary = "根据id查询菜品")
     public Result<DishVO> getById(@PathVariable Long id){
         log.info("根据id查询菜品: {}", id);
         DishVO dishVO = dishservice.getByIdWithFlavor(id);  // 把查询的数据封装为VO类返回给前端
@@ -86,7 +86,7 @@ public class DishController {
 
     /*  查询菜品 (根据分类id)  */
     @GetMapping("/list")
-    @ApiOperation("根据分类id查询菜品")
+    @Operation(summary = "根据分类id查询菜品")
     public Result<List<Dish>> getByCategoryId(Long categoryId){
         log.info("根据分类id查询菜品：{}", categoryId);
         List<Dish> dishList = dishservice.getByCategoryId(categoryId);
@@ -95,7 +95,7 @@ public class DishController {
 
     /*  修改菜品  */
     @PutMapping
-    @ApiOperation("修改菜品")
+    @Operation(summary = "修改菜品")
     public Result<String> update(@RequestBody DishDTO dishDTO){
         log.info("修改菜品：{}", dishDTO);
 
@@ -108,7 +108,7 @@ public class DishController {
 
     /*  启用、禁用菜品  */
     @PostMapping("/status/{status}")
-    @ApiOperation("启用或禁用菜品")
+    @Operation(summary = "启用或禁用菜品")
     public Result<String> startOrStop(@PathVariable("status") int status, Long id){
         log.info("启用或禁用菜品：{}, {}",status, id);
 

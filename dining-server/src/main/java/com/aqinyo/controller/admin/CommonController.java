@@ -3,8 +3,8 @@ package com.aqinyo.controller.admin;
 import com.aqinyo.constant.MessageConstant;
 import com.aqinyo.result.Result;
 import com.aqinyo.utils.AliOssUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,14 +20,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping("admin/common")
 @Slf4j
-@Api(tags = "admin端-通用相关接口")
+@Tag(name = "admin端-通用相关接口")
 public class CommonController {
 
     @Autowired
     private AliOssUtil aliOssUtil;  // 依赖注入AliOssUtil工具类
 
     @PostMapping("/upload")
-    @ApiOperation("文件上传")   // API描述
+    @Operation(summary = "上传文件")   // API描述
     public Result<String> upload(MultipartFile file){ //因为前端是用 multipartFile形式 把二进制文件传给后端的,所以后端也用 MultipartFile类型的文件 接收"前端发来"要传上去的文件 (形参名 = 接口文档的参数名)
         log.info("文件上传: {}", file);
         try {

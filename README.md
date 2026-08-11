@@ -16,9 +16,9 @@
 - 容器: Docker
 - 环境配置: 多环境yml（dev、test、pro）
 - 测试与规范: Junit5 + Mockito、Apifox
-- 接口文档: Knife4j + Swagger2
+- 接口文档: SpringDoc OpenAPI + Knife4j 4.x
 - 定时任务: Spring Task  (若定时任务多，就引入XXL-JOB中间件)
-- 监控: Actuator
+- 监控: Actuator 
 
 #### 运行环境
 - 操作系统: Windows 10
@@ -45,7 +45,7 @@
 7. 抽取代码中的字符串、提示词等为常量类，统一管理，避免硬编码（统一存放在 Dining-common 模块当中）
 8. 基于JUnit5 + Mockito框架，对7个核心ServiceImpl编写76个单元测试用例，覆盖正常流程、各类边界与异常场景
 9. 基于 Knife4j + Swagger2 自动生成接口文档（Controller 层: @Api + @ApiOperation 、 DTO类/VO类的EmployeeLoginDTO/EmployeeLoginVO: @ApiModel + @ApiModelProperty）
-10. 基于 Actuator 监控项目运行状态（健康检查、环境变量、指标、线程转储等），负责暴露监控端点（/actuator/），同时为后续可视化监控提供数据接口（云监控/P+G）
+10. 基于 Actuator 监控项目运行状态（健康检查、环境变量、指标、线程转储等），负责暴露监控端点（/actuator/），能为compose的healthcheck提供监控数据，同时为后续可视化监控提供数据接口（云监控/P+G）
 
 #### 注意事项
 1. 项目启动前记得检查Linux防火墙是否有放行中间件端口，如RabbitMQ的5672端口、Redis的6379端口等（docker重启后很容易规则冲突不放行的）

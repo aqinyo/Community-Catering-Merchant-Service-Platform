@@ -11,8 +11,8 @@ import com.aqinyo.result.Result;
 import com.aqinyo.service.EmployeeService;
 import com.aqinyo.utils.JwtUtil;
 import com.aqinyo.vo.EmployeeLoginVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +25,8 @@ import java.util.Map;
 @RestController     // @Controller + @ResponseBody
 @RequestMapping("/admin/employee")     //请求路径的前缀
 @Slf4j
-@Api(tags = "admin端-员工相关接口")  /* 类级别: 描述接口分组   (@Api和@ApiModel等都是Swagger的注解,是Swagger扫描这些注解时,读取的 "接口文档" 素材)  */
-public class EmployeeController {                                                // 在我项目中采取的是 "先编码,后自动生成文档" 的接口文档设计模式
+@Tag(name = "admin端-员工相关接口")  /* 类级别: 描述接口分组   (是Swagger扫描这些注解时,读取的 "接口文档" 素材)  */
+public class EmployeeController {                          // 在我项目中采取的是 "先编码,后自动生成文档" 的接口文档设计模式
 
     @Autowired
     private EmployeeService employeeService;    // 多态写法-->依赖注入的是service接口实现类serviceImpl的对象
@@ -35,7 +35,7 @@ public class EmployeeController {                                               
 
     /*  登录  */
     @PostMapping("/login")
-    @ApiOperation("员工登录")   /*  方法级别: 描述接口分组下的单个接口  */
+    @Operation(summary = "员工登录")   /*  方法级别: 描述接口分组下的单个接口  */
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 
@@ -62,14 +62,14 @@ public class EmployeeController {                                               
 
     /*  退出  */
     @PostMapping("/logout")
-    @ApiOperation("员工退出")
+    @Operation(summary = "员工退出")
     public Result<String> logout() {
         return Result.success();
     }
 
     /*  新增员工  */
     @PostMapping
-    @ApiOperation("新增员工")
+    @Operation(summary = "新增员工")
     public Result<String> add(@RequestBody EmployeeDTO employeeDTO){    //发送json数据则都用@RequestBody给形参加上,且controller的方法类型和返回值基本都是Result<T>
         log.info("新增员工：{}", employeeDTO);
         employeeService.add(employeeDTO);   /* 然后调用service层的方法进行业务操作 */
@@ -77,8 +77,8 @@ public class EmployeeController {                                               
     }
 
     /*  分页查询  */
-    @GetMapping("/page")     //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
-    @ApiOperation("员工分页查询")     //API的描述
+    @GetMapping("/page")                   //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
+    @Operation(summary = "员工分页查询")     //API的描述
     public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){  //这里不是传json数据了所以没加@RequestBody(分页查询都不加)
         log.info("员工分页查询：{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);    //封装成 PageResult对象(封装分页查询结果)
@@ -86,8 +86,8 @@ public class EmployeeController {                                               
     }
 
     /*  启用/禁用 员工账号  */
-    @PostMapping("/status/{status}")    //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
-    @ApiOperation("启用或禁用员工账号")      //API的描述
+    @PostMapping("/status/{status}")            //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
+    @Operation(summary = "启用或禁用员工账号")      //API的描述
     public Result<String> startOrStop(@PathVariable int status, Long id){ //要注意这里的: 形参名 = 接口文档的参数名
         log.info("启用或禁用员工账号：{}，{}", status, id);
         employeeService.startOrStop(status, id);
@@ -96,7 +96,7 @@ public class EmployeeController {                                               
 
     /*  查询员工信息 (根据id)  */
     @GetMapping("/{id}")    //带有{}这里是属于路径参数,所以加@PathVariable,用于提取{}里面的参数
-    @ApiOperation("根据id查询员工信息")
+    @Operation(summary = "根据id查询员工信息")
     public Result<Employee> getById(@PathVariable long id){
         log.info("回显员工信息：{}", id);
         Employee employee = employeeService.getById(id);
@@ -106,7 +106,7 @@ public class EmployeeController {                                               
 
     /*  修改员工信息      (这里修改是"先查后改",涉及到两个接口的)  */
     @PutMapping
-    @ApiOperation("修改员工信息")
+    @Operation(summary = "修改员工信息")
     public Result<String> update(@RequestBody EmployeeDTO employeeDTO){
         log.info("修改员工信息：{}", employeeDTO);
         employeeService.update(employeeDTO);

@@ -7,41 +7,41 @@ services:
     ports:
       - "8080:8080"
     depends_on:                       # 启动顺序依赖：先启动 redis、rabbitmq 容器，再启动 app 容器
-      - redis                         # 但depends_on仅是控制启动顺序，不等待服务就绪，Redis、RabbitMQ启动需要时间(所以compose搭配Actuator暴露的指标进行healthcheck才行)
+      - redis                         # 但depends_on仅是控制启动顺序，不等待服务就绪，Redis、RabbitMQ启动需要时间(所以compose要搭配Actuator暴露的指标进行healthcheck才行)
       - rabbitmq
     environment:
       TZ: Asia/Shanghai               # 设置系统环境变量。把容器内的时区设为上海，这能防止项目输出到日志文件的时间有时间差问题
     restart: always                   # 重启策略：如果 app 容器(我的SpringBoot项目)意外重启 / Down掉，Docker 会自动把它重新拉起来
-    # 挂载外部配置：服务器上config文件夹内的application-pro.yml配置 (这一步是在Linux服务器拉取git代码之前提前写好的，到服务器上手动创建application-pro.yml写连接数据后，就能在启动时使用这个配置)
+    # 挂载外部配置：把Linux服务器当前目录./config/application-pro.yml这个生产环境配置文件,挂载到容器内部的/app/config/application-pro.yml路径 (好处:可以在外部修改SpringBoot的配置,而不需要重新打包成镜像,仅需重启容器即可生效)
     volumes:
       - ./config/application-pro.yml:/app/config/application-pro.yml
 
 
 
-  # Redis 配置
   redis:                              # 服务名
     image: redis:7-alpine             # 直接拉取现成的官方 Redis 镜像，不用写 Dockerfile 自己构建 (与build作用相反)
-    container_name: dining-redis      # 自定义容器名，方便后面 docker ps 时能区分
+    container_name: dining-redis      # 容器名  (方便后面 docker compose ps 时能区分)
     command: redis-server --requirepass "123456" --appendonly yes    # 容器启动时直接设置密码 + 开启AOF持久化，容器内redis开启落盘
     ports:
       - "6379:6379"
     restart: always                   # 重启策略：如果 Redis 意外重启 / 项目崩溃退出了，Docker 会自动把它重新拉起来 (必要前提:我的Docker设置了开机自启)
-    # 数据卷，持久化redis数据
-    volumes:
-      - redis_data:/data              # 命名卷（推荐，不用管宿主机路径，SELinux问题少）
-    healthcheck:  # 此时Actuator提供的/actuator/health接口正好可以被Compose用作健康检查/healthcheck的目标 (即使没有云监控/P+G的可视化工具)
+
+    # 健康检查: 搭配Actuator暴露的指标进行healthcheck  (Actuator提供的/actuator/health接口)
+    healthcheck:
       test: [ "CMD", "redis-cli", "-a", "123456", "ping" ]  # 使用redis‑cli ping探测；必须携带密码；返回PONG代表服务真正可用；不要只探测端口
       interval: 10s                   # 每10s执行一次健康探测
       timeout: 5s                     # 探测5s没响应判定单次失败
       retries: 3                      # 连续3次失败，标记容器unhealthy
       start_period: 20s               # 容器刚启动20s内跳过检测，留给redis初始化时间
+    # 命名卷挂载: 声明redis_data这个命名卷,把redis数据挂载到Docker托管的/data目录下做持久化 (好处:容器重启/删除后,数据不会丢失)
+    volumes:
+      - redis_data:/data
 
 
 
-  # RabbitMQ 配置
-  rabbitmq:
+  rabbitmq:                           # 服务名
     image: rabbitmq:3-management      # 直接拉取现成的官方 RabbitMQ 镜像
-    container_name: dining-rabbitmq
+    container_name: dining-rabbitmq   # 容器名
     ports:
       - "5672:5672"                   # amqp端口，java程序连接
       - "15672:15672"                 # web管理后台
@@ -49,17 +49,21 @@ services:
       RABBITMQ_DEFAULT_USER: admin    # 这两行含义：容器启动时创建管理员账号(如果不写这两行，默认只有guest账号，容器之间无法使用guest连接会报错，所以MQ强烈建议手动指定账号)
       RABBITMQ_DEFAULT_PASS: 123456
     restart: always
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq   # 命名卷，优先推荐，SELinux坑少(整个地址是各组件自身固定的)
+
+    # 健康检查
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]  # 使用rabbitmqctl status原生命令探测 (不能仅是telnet端口，因为telnet端口为True不等于mq就绪)
       interval: 15s
       timeout: 10s
       retries: 3
       start_period: 60s               # rabbitmq启动慢，给它留足初始化等待时间
+    # 命名卷挂载: 声明rabbitmq_data这个命名卷,把rabbitmq数据挂载到Docker托管的/var/lib/rabbitmq目录下做持久化 (好处:容器重启/删除后,数据不会丢失)
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
 
 
-volumes:   # 定义命名卷：声明这两个数据卷的存在，docker托管存储，规避SELinux目录权限问题 (且volumes 和 services 同级)
+# 声明命名卷: 用来告诉docker-compose我们需要创建这两个命名卷，由Docker来管理这两个数据卷的存储  (volumes与services同级)
+volumes:
   redis_data:
   rabbitmq_data:

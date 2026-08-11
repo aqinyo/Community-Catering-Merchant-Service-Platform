@@ -8,7 +8,7 @@ import com.aqinyo.result.Result;
 import com.aqinyo.service.UserService;
 import com.aqinyo.utils.JwtUtil;
 import com.aqinyo.vo.UserLoginVO;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("user/user")
-@Api(tags = "user端-用户相关接口")
+@Tag(name = "user端-用户相关接口")
 @Slf4j
 public class UserController {
 

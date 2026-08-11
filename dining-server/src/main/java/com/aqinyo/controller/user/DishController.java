@@ -5,8 +5,8 @@ import com.aqinyo.entity.Dish;
 import com.aqinyo.result.Result;
 import com.aqinyo.service.DishService;
 import com.aqinyo.vo.DishVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +21,8 @@ import java.util.List;
 
 @RestController("userDishController")
 @RequestMapping("/user/dish")
-@Api(tags = "user端-菜品浏览接口")
+@Tag(name = "user端-菜品浏览接口")
+@Slf4j
 public class DishController {
 
     @Autowired
@@ -31,7 +32,7 @@ public class DishController {
 
     /*   根据 "分类id" 查询菜品   */
     @GetMapping("/list")
-    @ApiOperation("根据分类id查询菜品")
+    @Operation(summary = "根据分类id查询菜品")
     public Result<List<DishVO>> list(Long categoryId) {
 
         // 构造redis中key的规则: Dish_categoryId= --> 分类(key)下挂着该套餐对应的菜品(value)

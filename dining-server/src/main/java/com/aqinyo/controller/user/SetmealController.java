@@ -5,8 +5,8 @@ import com.aqinyo.entity.Setmeal;
 import com.aqinyo.result.Result;
 import com.aqinyo.service.SetmealService;
 import com.aqinyo.vo.DishItemVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController("userSetmealController")
 @RequestMapping("/user/setmeal")
-@Api(tags = "user端-套餐浏览接口")
+@Tag(name = "user端-套餐浏览接口")
 public class SetmealController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class SetmealController {
     /*   条件查询   */
     @GetMapping("/list")                                            /*   注意:一般这个缓存注解写在service层的,这里偷懒写在controller层   */
     @Cacheable(cacheNames = "SetMeal", key = "#categoryId") //如果形参是user,则key写成#user.id     (最终效果是-->SetMeal::categoryId的值)
-    @ApiOperation("根据分类id查询套餐")                         //注: 注解式缓存是不依赖注入RedisTemplate的噢！依赖的是Spring底层提供的CacheManager缓存管理器
+    @Operation(summary = "根据分类id查询套餐")                         //注: 注解式缓存是不依赖注入RedisTemplate的噢！依赖的是Spring底层提供的CacheManager缓存管理器
     public Result<List<Setmeal>> list(Long categoryId) {
         Setmeal setmeal = new Setmeal();
         setmeal.setCategoryId(categoryId);
@@ -40,7 +40,7 @@ public class SetmealController {
 
     /*   根据套餐id查询包含的菜品   */
     @GetMapping("/dish/{id}")
-    @ApiOperation("根据套餐id查询包含的菜品列表")
+    @Operation(summary = "根据套餐id查询包含的菜品列表")
     public Result<List<DishItemVO>> dishList(@PathVariable("id") Long id) {
         List<DishItemVO> list = setmealService.getDishItemById(id);
         return Result.success(list);
