@@ -14,6 +14,7 @@ services:
         condition: service_healthy    # 【新增】必须等到 Redis 健康检查通过（端口可用）后才启动 App
       rabbitmq:
         condition: service_healthy    # 【新增】必须等到 RabbitMQ 健康检查通过（端口可用）后才启动 App (最后部署也是因为加了这个成功了！)
+      # app的depends_on中使用的 condition: service_healthy，依赖的就是下方redis和rabbitmq自身配置的healthcheck
 
     restart: always                   # 重启策略：如果 app 容器(我的SpringBoot项目)意外重启 / Down掉，Docker 会自动把它重新拉起来
 
