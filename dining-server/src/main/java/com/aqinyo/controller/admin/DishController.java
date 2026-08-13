@@ -31,7 +31,6 @@ public class DishController {
     private RedisTemplate redisTemplate;    // 依赖注入的是自定义的RedisTemplate (也是Redis的java客户端-->连接并使用Redis服务端的)
                                             // 可用自定义模板redisTemplate(当前选用)  或  默认string类型的模板StringRedisTemplate
 
-
     /*   抽取删除Redis缓存方法: 全删菜品数据缓存   */
     private void CleanRedis(String pattern) {   // 因为只在本类中使用,所以是私有属性
         Set keys = redisTemplate.keys(pattern);
@@ -42,7 +41,7 @@ public class DishController {
     /*  新增菜品  */
     @PostMapping
     @Operation(summary = "新增菜品")
-    public Result<String> add(@RequestBody DishDTO dishDTO){    // 依旧是 DTO类 接收前端请求发来的数据 (json数据则都用@RequestBody给形参加上)
+    public Result<String> add(@RequestBody DishDTO dishDTO){    // 依旧是 DTO类 接收前端请求发来的数据 (入参的是json数据，则用@RequestBody给形参加上)
         log.info("新增菜品：{}", dishDTO);
 
         // 精准删除 Redis旧的缓存数据
@@ -64,8 +63,9 @@ public class DishController {
 
     /*  批量删除菜品  */
     @DeleteMapping
-    @Operation(summary = "菜品批量删除")     // 加@RequestParam因为是动态删除,单个也可以删
-    public Result<String> delete(@RequestParam List<Long> ids){   // 采用list集合是因为前端请求涉及多个参数
+    @Operation(summary = "菜品批量删除")
+    public Result<String> delete(@RequestParam List<Long> ids){ /* 虽然没有固定路径,但是list集合有前端请求涉及的多个查询参数
+                                                  (即接口约定了id放在URL Query上接收,比如: /dish?ids=1&ids=2...) 所以用@RequestParam 而没用 @RequestBody */
         log.info("菜品批量删除：{}", ids);
 
         // 删除redis中全部缓存的菜品数据

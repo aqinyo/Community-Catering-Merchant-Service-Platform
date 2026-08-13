@@ -30,6 +30,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;    //依赖注入user端jwt令牌校验的拦截器
 
+
     /*  设置静态资源映射	 (对于接口文档:静态放行)  (对于JWT:静态放行+ 下面动态拦截)   */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -55,49 +56,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")                   // 添加 以/admin开头的所有请求-->执行拦截"任务"(即如果绕过登录不获取token,则请求都为无效,然后拦截器不放行)
                 .excludePathPatterns("/admin/employee/login");  // 排除 /admin/employee/login请求的拦截"任务"
-                                                                /* 总结: 这个拦截器任务是 --> 做JWT校验拦截,没有token就不放行+报401错;只有登录这个请求是放行的,因为要放你登录拿token嘛 */
+
         // 注册 user端JWT拦截器
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/user/login")
                 .excludePathPatterns("/user/shop/status")
-                .excludePathPatterns("/user/dish/list");        // 因为这里需要做压测,所以先放行一下这个接口(根据分类id查询菜品)
-    }
-
-
-
-    /*  通过 SpringDoc + Knife4j 自动生成接口文档配置   (格式可参考复用)  */
-    private Info PublicInfo() {  // 公共文档信息
-        return new Info()
-                .title("社区餐饮服务项目接口文档")
-                .contact(new Contact()
-                        .name("Aqinyo")
-                        .url("https://github.com/Aqinyo")
-                        .email("3186538497@qq.com"))
-                .version("1.0")
-                .description("通过 knife4j 4.x + SpringDoc 来自动生成接口文档");
-    }
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI().info(PublicInfo());
-    }
-
-  /*  admin端 接口文档   */
-    @Bean
-    public GroupedOpenApi adminApi() {
-        return GroupedOpenApi.builder()
-                .group("管理端接口")
-                .packagesToScan("com.aqinyo.controller.admin")
-                .build();
-    }
-
-    /*  user端 接口文档   */
-    @Bean
-    public GroupedOpenApi userApi() {
-        return GroupedOpenApi.builder()
-                .group("用户端接口")
-                .packagesToScan("com.aqinyo.controller.user")
-                .build();
+                .excludePathPatterns("/user/dish/list");       // 因为这里需要做压测,所以先放行一下这个接口(根据分类id查询菜品)
     }
 
 
@@ -111,9 +76,49 @@ public class WebMvcConfig implements WebMvcConfigurer {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         //为消息转换器设置一个对象转换器，对象转换器可以将java对象转换为json数据
         converter.setObjectMapper(new JacksonObjectMapper());
-        //将自己的消息转换器加入容器中
-        converters.add(0, converter);
 
+        // 将自己的消息转换器加入容器中,且只add,不要指定index=0的优先级设定,0是指第一个位置,放到列表尾部,不影响框架内部接口的正常运行
+        // converters.add(0, converter);
+        /* 指定index=0后,导致自定义过滤器干扰了响应输出,返回的不是标准JSON,而是被gzip压缩后的二进制流,浏览器没有自动解压,直接把压缩字节当成文本渲染,前端knife4j解析JSON失败,因此我的接口文档无法在网页打开) */
+        converters.add(converter);
+
+    }
+
+
+
+
+    /*  通过 SpringDoc + Knife4j 自动生成接口文档的配置   (格式可参考复用)  */
+    @Bean
+    public OpenAPI customOpenAPI() {    // OpenAPI是全局配置: 只不过这里把要定义的接口文档基本信息,抽取到PublicInfo()方法中了
+        return new OpenAPI().info(PublicInfo());
+    }
+
+    private Info PublicInfo() {  // B/C端的公共文档信息
+        return new Info()
+                .title("社区餐饮服务项目接口文档")
+                .contact(new Contact()       // 负责人信息
+                        .name("Aqinyo")
+                        .url("https://github.com/Aqinyo")
+                        .email("3186538497@qq.com"))
+                .version("3.0")
+                .description("通过 SpringDoc 1.7.0  +  Knife4j 3.0.3 来自动生成接口文档");
+    }
+
+    /*  admin端 接口文档   */
+    @Bean
+    public GroupedOpenApi adminApi() {      // GroupedOpenApi是分组配置
+        return GroupedOpenApi.builder()
+                .group("管理端接口")
+                .packagesToScan("com.aqinyo.controller.admin")
+                .build();
+    }
+    /*  user端 接口文档   */
+    @Bean
+    public GroupedOpenApi userApi() {
+        return GroupedOpenApi.builder()
+                .group("用户端接口")
+                .packagesToScan("com.aqinyo.controller.user")
+                .build();
     }
 
 }

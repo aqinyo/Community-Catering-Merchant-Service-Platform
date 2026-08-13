@@ -34,10 +34,11 @@
             <artifactId>spring-context</artifactId>
         </dependency>
 
-        <!-- model 模块只需要注解：@Schema、@Tag 等 OpenAPI3 注解只用这个轻量包，不带自动配置 (父工程虽有引用但更像声明依赖，在子模块中才是实际引用) -->
+        <!-- model子模块只需要@Schema等注解,不用UI增强,所以单独引入io.swagger.core.v3:swagger-annotations:2.2.10 依赖即可,只提供@Schema纯注解 (父工程虽有引用但更像声明依赖，在子模块中才是实际引用) -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.10</version>
         </dependency>
 
     </dependencies>

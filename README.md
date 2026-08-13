@@ -2,11 +2,11 @@
 
 #### 介绍
 - 该项目是“社区餐饮商户服务平台”，是基于SpringBoot的后端服务平台，是单体项目，包含我的代码和记录的笔记知识等
-- 开发时间:2026.03 - 2026.06
-- 项目性质:个人后端
+- 开发时间:2026.04 - 2026.07
+- 项目性质:个人后端项目
 
 #### 技术栈
-- 核心框架: Spring Boot + Spring MVC
+- 核心框架: Spring Boot 2.7.3 + Spring MVC
 - 数据库框架: MyBatis + Druid连接池 + PageHelper分页插件
 - 缓存: Redis
 - 消息队列: RabbitMQ
@@ -16,7 +16,7 @@
 - 容器: Docker
 - 环境配置: 多环境yml（dev、test、pro）
 - 测试与规范: Junit5 + Mockito、Apifox
-- 接口文档: SpringDoc OpenAPI + Knife4j
+- 接口文档: SpringDoc 1.7.0  +  Knife4j 3.0.3
 - 定时任务: Spring Task  (若定时任务多，就引入XXL-JOB中间件)
 - 监控: Actuator 
 

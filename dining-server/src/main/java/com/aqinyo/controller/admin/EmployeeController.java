@@ -61,7 +61,7 @@ public class EmployeeController {                          // 在我项目中采
     }
 
     /*  退出  */
-    @PostMapping("/logout")
+    @PostMapping("/logout")     //括号里面的就是固定路径,加了固定路径/路径参数后,是不用加@RequestBody的
     @Operation(summary = "员工退出")
     public Result<String> logout() {
         return Result.success();
@@ -70,32 +70,32 @@ public class EmployeeController {                          // 在我项目中采
     /*  新增员工  */
     @PostMapping
     @Operation(summary = "新增员工")
-    public Result<String> add(@RequestBody EmployeeDTO employeeDTO){    //发送json数据则都用@RequestBody给形参加上,且controller的方法类型和返回值基本都是Result<T>
+    public Result<String> add(@RequestBody EmployeeDTO employeeDTO){  /* 接收json请求体,就用@RequestBody给形参加上 --> 解析Request中Body里的JSON到DTO,所以这个注解就设计叫@RequestBody (且一个接口方法只能有一个@RequestBody) */
         log.info("新增员工：{}", employeeDTO);
-        employeeService.add(employeeDTO);   /* 然后调用service层的方法进行业务操作 */
-        return Result.success();    //返回无参的,因为没有需要返回的VO类数据
+        employeeService.add(employeeDTO);   // 调用service层的方法进行业务操作
+        return Result.success();    //返回无参的,因为没有需要返回的VO类数据，且controller的方法类型和返回值基本都是Result<T>
     }
 
     /*  分页查询  */
     @GetMapping("/page")                   //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
     @Operation(summary = "员工分页查询")     //API的描述
-    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){  //这里不是传json数据了所以没加@RequestBody(分页查询都不加)
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){  /*  因为设置有路径参数(/page),所以不加@RequestBody (假如不加路径参数,则需要加@RequestBody)  */
         log.info("员工分页查询：{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);    //封装成 PageResult对象(封装分页查询结果)
         return Result.success(pageResult);
     }
 
     /*  启用/禁用 员工账号  */
-    @PostMapping("/status/{status}")            //REST风格的请求路径 --> 里面的请求路径也是,根据接口文档设计的来加入即可,不是自己定义的
+    @PostMapping("/status/{status}")   /*  带有{}这里是属于路径参数,所以给入参加@PathVariable,用于提取路径参数{}里面的参数  */
     @Operation(summary = "启用或禁用员工账号")      //API的描述
-    public Result<String> startOrStop(@PathVariable int status, Long id){ //要注意这里的: 形参名 = 接口文档的参数名
+    public Result<String> startOrStop(@PathVariable int status, @RequestParam Long id){ //要注意这里的: 形参名 = 接口文档的参数名 (且一个路径参数{}对应一个@PathVariable) (后者是查询参数)
         log.info("启用或禁用员工账号：{}，{}", status, id);
         employeeService.startOrStop(status, id);
         return Result.success();    // 返回Result结果集类的无参success方法 (这里不用返回数据,所以调用的是无参)
     }
 
     /*  查询员工信息 (根据id)  */
-    @GetMapping("/{id}")    //带有{}这里是属于路径参数,所以加@PathVariable,用于提取{}里面的参数
+    @GetMapping("/{id}")
     @Operation(summary = "根据id查询员工信息")
     public Result<Employee> getById(@PathVariable long id){
         log.info("回显员工信息：{}", id);

@@ -43,7 +43,7 @@ public class RedisTask {
 
 
     /*   【必要】服务启动预热: 服务启动后执行一次预热     (应对服务版本迭代的重新发布,也避免了服务重启出现缓存雪崩)   */
-    @PostConstruct      // @PostConstruct: 确保该方法在依赖注入后,立即执行该方法              (在部署中我去掉了该注解，因为容器启动太快，Mapper来不及初始化就报错)
+    @PostConstruct      // @PostConstruct: 确保该方法在依赖注入后,立即执行该方法      (在部署中我去掉了该注解，因为容器启动太快，Mapper来不及初始化就报错)
     public void warmUpOnStartup() {
         log.info("【缓存预热】服务启动, 开始预热Redis缓存..."); //目的:避免服务冷启动时,大量请求打穿数据库
         warmUpDishCache();      //预热菜品缓存
