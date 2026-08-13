@@ -86,8 +86,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 
 
-
-    /*  通过 SpringDoc + Knife4j 自动生成接口文档的配置   (格式可参考复用)  */
+    /*  SpringDoc + Knife4j 自动生成接口文档配置   (格式可参考复用)  */
     @Bean
     public OpenAPI customOpenAPI() {    // OpenAPI是全局配置: 只不过这里把要定义的接口文档基本信息,抽取到PublicInfo()方法中了
         return new OpenAPI().info(PublicInfo());
@@ -104,7 +103,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .description("通过 SpringDoc 1.7.0  +  Knife4j 3.0.3 来自动生成接口文档");
     }
 
-    /*  admin端 接口文档   */
+    //  admin端 接口文档
     @Bean
     public GroupedOpenApi adminApi() {      // GroupedOpenApi是分组配置
         return GroupedOpenApi.builder()
@@ -112,7 +111,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .packagesToScan("com.aqinyo.controller.admin")
                 .build();
     }
-    /*  user端 接口文档   */
+
+    //  user端 接口文档
     @Bean
     public GroupedOpenApi userApi() {
         return GroupedOpenApi.builder()
