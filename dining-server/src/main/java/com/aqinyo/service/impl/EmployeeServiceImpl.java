@@ -31,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeMapper employeeMapper;  // 多态写法-->依赖注入的是mapper接口实现类的对象
 
     /*  登录  */
-    public Employee login(EmployeeLoginDTO employeeLoginDTO) {
+    public Employee login(EmployeeLoginDTO employeeLoginDTO) {  /*  对于Service层实现业务逻辑: 可以先把先做什么后做什么的流程分点写好,然后再动手编码 */
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
 

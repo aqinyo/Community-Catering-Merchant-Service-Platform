@@ -1,26 +1,27 @@
-services:
+services:     # 这里是 "容器运行参数" 配置文件  (注: 配置的先后顺序也是compose拉起容器的顺序 app -> redis -> rabbitmq -> nginx)
 
-  # 我的SpringBoot项目 配置
+  # 我的SpringBoot项目参数配置
   app:
     build: .                          # 【核心】告诉 Docker 在当前docker-compose.yml的目录下寻找 Dockerfile 文件，并构建镜像
     container_name: dining-app
     ports:
-      - "8080:8080"
+      - "8080:8080"                   # 宿主机端口 : 服务在容器内部运行的端口
     environment:
       TZ: Asia/Shanghai               # 设置系统环境变量。把容器内的时区设为上海，这能防止项目输出到日志文件的时间有8h时间差
 
-    depends_on:                       # 启动顺序依赖：先启动 redis、rabbitmq 容器，再启动 app 容器
+    depends_on:                       # 启动顺序依赖: 先启动 redis、rabbitmq 容器,再启动 app 容器
       redis:                          # 但depends_on仅是控制启动顺序，不等待服务就绪，Redis、RabbitMQ启动需要时间(所以要搭配healthcheck才行)
         condition: service_healthy    # 【新增】必须等到 Redis 健康检查通过（端口可用）后才启动 App
       rabbitmq:
         condition: service_healthy    # 【新增】必须等到 RabbitMQ 健康检查通过（端口可用）后才启动 App (最后部署也是因为加了这个成功了！)
       # app的depends_on中使用的 condition: service_healthy，依赖的就是下方redis和rabbitmq自身配置的healthcheck
 
-    restart: always                   # 重启策略：如果 app 容器(我的SpringBoot项目)意外重启 / Down掉，Docker 会自动把它重新拉起来
+    restart: always                   # 重启策略: 如果 app 容器(我的SpringBoot项目)意外重启 / Down掉，Docker 会自动把它重新拉起来
 
-    # 挂载外部配置：把Linux服务器当前目录./config/application-pro.yml这个生产环境配置文件,挂载到容器内部的/app/config/application-pro.yml路径 (好处:可以在外部修改SpringBoot的配置,而不需要重新打包成镜像,仅需重启容器即可生效)
+    # 外部配置【绑定挂载】: 把Linux服务器当前目录"新建"的./config/application-pro.yml生产环境配置文件 ---挂载到--> 容器内部的 /app/config/application-pro.yml 路径下 (好处:可以在外部修改SpringBoot的配置,而不需要重新打包成镜像,仅需重启容器即可生效)
     volumes:
       - ./config/application-pro.yml:/app/config/application-pro.yml
+    # 只要是外部配置【绑定挂载】,在生产规范上:都必须把要挂载的配置文件,提前在Linux服务器手动"新建"好,且目录结构也要和compose这里定义的路径一致 (下面nginx的挂载同理)
 
 
 
@@ -28,10 +29,9 @@ services:
     image: redis:7-alpine             # 直接拉取现成的官方 Redis 镜像，不用写 Dockerfile 自己构建 (与build作用相反)
     container_name: dining-redis      # 容器名  (方便后面 docker compose ps 时能区分)
     command: redis-server --requirepass "123456" --appendonly yes    # 容器启动时直接设置密码 + 开启AOF持久化，容器内redis开启落盘
-    ports:
+    ports:                                                           # 这种方式是: 启动命令传参,不用外置redis.conf文件 (而nginx要外置nginx.conf,然后挂载宿到容器内)
       - "6379:6379"
     restart: always                   # 重启策略：如果 Redis 意外重启 / 项目崩溃退出了，Docker 会自动把它重新拉起来 (必要前提:我的Docker设置了开机自启)
-
     # 健康检查: 搭配Actuator暴露的指标进行healthcheck  (Actuator提供的/actuator/health接口)
     healthcheck:
       test: [ "CMD", "redis-cli", "-a", "123456", "ping" ]  # 使用redis‑cli ping探测；必须携带密码；返回PONG代表服务真正可用；不要只探测端口
@@ -39,7 +39,7 @@ services:
       timeout: 5s                     # 探测5s没响应判定单次失败
       retries: 3                      # 连续3次失败，标记容器unhealthy
       start_period: 20s               # 容器刚启动20s内跳过检测，留给redis初始化时间
-    # 命名卷挂载: 声明redis_data这个命名卷,把redis数据挂载到Docker托管的/data目录下做持久化 (好处:容器重启/删除后,数据不会丢失)
+    # 【命名卷挂载】: 声明redis_data这个命名卷,把redis数据挂载到Docker托管的/data目录下做持久化 (好处:容器重启/删除后,数据不会丢失)
     volumes:
       - redis_data:/data
 
@@ -55,17 +55,34 @@ services:
       RABBITMQ_DEFAULT_USER: admin    # 这两行含义：容器启动时创建管理员账号(如果不写这两行，默认只有guest账号，容器之间无法使用guest连接会报错，所以MQ强烈建议手动指定账号)
       RABBITMQ_DEFAULT_PASS: 123456
     restart: always
-
     # 健康检查
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]  # 使用rabbitmqctl status原生命令探测 (不能仅是telnet端口，因为telnet端口为True不等于mq就绪)
-      interval: 15s
-      timeout: 10s
+      interval: 30s
+      timeout: 30s
       retries: 3
-      start_period: 60s               # rabbitmq启动慢，给它留足初始化等待时间
-    # 命名卷挂载: 声明rabbitmq_data这个命名卷,把rabbitmq数据挂载到Docker托管的/var/lib/rabbitmq目录下做持久化 (好处:容器重启/删除后,数据不会丢失)
+      start_period: 120s               # rabbitmq启动慢，给它留足初始化等待时间
+    # 【命名卷挂载】: 声明rabbitmq_data这个命名卷,把rabbitmq数据挂载到Docker托管的/var/lib/rabbitmq目录下做持久化 (好处:容器重启/删除后,数据不会丢失)
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+
+
+
+  nginx:                              # 【新增】提前写进来,方便之后的前后端联调时使用到nginx
+    image: nginx:1.27                 # 新选用基于Debian的稳定版,不受此此前nginx:alpine的权限问题影响！
+    container_name: dining-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:                       # 启动顺序依赖: 先启动app容器,再启动nginx容器 (与app不同,nginx不用依赖redis和rabbitmq)
+      - app
+    restart: always
+    # 外部配置【绑定挂载】: 把Linux服务器当前目录"新建"的./nginx/conf.d 等配置目录 ---挂载到--> 容器内部的 /etc/nginx/conf.d 路径下 (下面的挂载也是同理)
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d   # nginx站点配置,挂载 server块 子配置目录
+      - ./nginx/cert:/etc/nginx/cert       # SSL证书目录 (只读)
+      - ./nginx/logs:/var/log/nginx        # 日志目录
+    # 只要是外部配置【绑定挂载】,在生产规范上:都必须把要挂载的配置文件,提前在Linux服务器手动"新建"好,且目录结构也要和compose这里定义的路径一致
 
 
 

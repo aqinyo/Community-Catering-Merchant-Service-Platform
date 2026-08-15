@@ -25,19 +25,20 @@
 - 开发工具: IntelliJ IDEA（Amazon Corretto 1.8.0_452）
 - 数据库: MySQL 8.0 （本地）
 - 中间件运行操作系统: Linux（CentOS 7）
-- 缓存: Redis 6.2.6
-- 消息队列: RabbitMQ 3.9+
+- 缓存: Redis 6.2.6         
+- 消息队列: RabbitMQ 3.9+     
 - 容器环境: Docker 26.1.4
 
 ### 项目部署-运行环境（模拟生产环境）
 - 部署系统: Linux（CentOS 7）
 - 使用工具: VMware Workstation
-- 数据库: MySQL 8.0 （Linux本地、普通用户权限）
-- 缓存: Redis 6.2.6（Docker容器）
-- 消息队列: RabbitMQ 3.9+（Docker容器）
+- 数据库: MySQL 8.0        （Linux本地、普通用户权限）
+- 缓存: Redis 6.2.6        （compose编排、Docker容器运行）
+- 消息队列: RabbitMQ 3.9+   （compose编排、Docker容器运行）
+- 反向代理: Nginx 1.27      （compose编排、Docker容器运行）
 - 容器环境: Docker 26.1.4
 - 部署编排: Docker Compose
-- SSH工具: FinalShell （普通用户权限）
+- SSH工具: FinalShell      （普通用户权限）
     
 #### 软件架构
 单体架构（controller - service - mapper 三层架构）
