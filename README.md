@@ -4,6 +4,10 @@
 - 该项目是“社区餐饮商户服务平台”，是基于SpringBoot的后端服务平台，是模块化单体架构，项目内聚合多模块分层管理，包含我的代码和记录的笔记知识等
 - 开发时间:2026.04 - 2026.07
 - 项目性质:个人后端项目
+- 项目层级:
+  - dining-common: 公共通用模块（工具类、常量、异常 等通用代码）
+  - dining-model: DTO/VO/实体类（数据模型模块）
+  - dining-server: 核心业务模块（启动类 + Controller + Service + Mapper 等业务逻辑代码）
 
 #### 技术栈
 - 核心框架: Spring Boot 2.7.3 + Spring MVC
