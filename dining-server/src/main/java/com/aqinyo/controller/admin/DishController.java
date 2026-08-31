@@ -26,7 +26,7 @@ import java.util.Set;
 public class DishController {
 
     @Autowired
-    private DishService dishservice;//依赖注入
+    private DishService dishservice;
     @Autowired
     private RedisTemplate redisTemplate;    // 依赖注入的是自定义的RedisTemplate (也是Redis的java客户端-->连接并使用Redis服务端的)
                                             // 可用自定义模板redisTemplate(当前选用)  或  默认string类型的模板StringRedisTemplate
