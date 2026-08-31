@@ -48,6 +48,14 @@ spring:       # Spring Boot 服务的配置 (一定要注意层级关系,不能�
           initial-interval: 3000          # 失败重试时间间隔3s
 
 
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8087         # Sentinel 控制台地址，本地调试用的，与项目的8080区别开来 (生产可关闭控制台)
+        port: 8719                        # Sentinel 控制台交互的默认端口，端口冲突可修改
+        eager: true                       # 取消懒加载: 项目启动时立即初始化Sentinel，不用等第一次请求才触发
+
+
 # MyBatis应该也是要配置的,但我使用的Mapper自动代理很规范(目录结构对应上、XML文件全限定类名也对应上),所以这里就不需要配置了,都与默认的MyBatis配置内容一致
 mybatis:
   # mapper配置文件

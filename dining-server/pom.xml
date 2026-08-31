@@ -152,7 +152,14 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Sentinel 依赖  -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
     </dependencies>
+
 
 
     <!-- 这里主要作用是: 将 Spring Boot 项目打包成可执行的 jar包 -->

@@ -1,5 +1,6 @@
 package com.aqinyo.controller.user;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.aqinyo.constant.StatusConstant;
 import com.aqinyo.entity.Dish;
 import com.aqinyo.result.Result;
@@ -33,6 +34,7 @@ public class DishController {
     /*   根据 "分类id" 查询菜品   */
     @GetMapping("/list")
     @Operation(summary = "根据分类id查询菜品")
+    @SentinelResource(value = "dishList")  // 通常: 资源名 = 接口名/方法名  (也可以随便起,只要这里的资源名和SentinelRuleConfig中规则配置的资源名保持一致即可)
     public Result<List<DishVO>> list(Long categoryId) {
 
         // 构造redis中key的规则: Dish_categoryId= --> 分类(key)下挂着该套餐对应的菜品(value)

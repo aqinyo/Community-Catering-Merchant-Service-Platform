@@ -63,7 +63,7 @@ public class RedisTask {
 
 
 
-    /*   预热菜品缓存  (手动式缓存)   */
+    /*   “预热菜品缓存"方法的业务逻辑  (手动式缓存)   */
     private void warmUpDishCache() {
         // 查询所有"菜品类型"的分类 (type=1)
         List<Category> categoryType = categoryService.list(1);  // 1、菜品分类 2、套餐分类
@@ -93,7 +93,7 @@ public class RedisTask {
 
 
 
-    /*   预热套餐缓存  (注解式缓存)   */
+    /*   "预热套餐缓存"方法的业务逻辑  (注解式缓存)   */
     private void warmUpSetmealCache() {
         // 查询所有"套餐类型"的分类 (type=2)
         List<Category> categoryType = categoryService.list(2);  // 1、菜品分类 2、套餐分类

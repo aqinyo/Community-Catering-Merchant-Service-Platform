@@ -56,10 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     /*   商家端 - 分页查询   */
     public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
+        // 分页查询: 调用分页插件PageHelper.startPage()方法 ; 设置分页参数: page 当前页码、PageSize 每页记录数
         PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
-        //下一条sql进行分页，自动加入limit关键字分页
+        //执行分页查询: 调用分类Mapper的pageQuery()方法，自动加入limit关键字分页查询
         Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);
-        return new PageResult(page.getTotal(), page.getResult());
+        return new PageResult(page.getTotal(), page.getResult()); // page.getTotal() 总记录数 ; page.getResult() 当前页数据集合
     }
 
 

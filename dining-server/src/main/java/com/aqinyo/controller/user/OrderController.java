@@ -1,5 +1,6 @@
 package com.aqinyo.controller.user;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.aqinyo.dto.OrdersPageQueryDTO;
 import com.aqinyo.dto.OrdersPaymentDTO;
 import com.aqinyo.dto.OrdersSubmitDTO;
@@ -27,6 +28,7 @@ public class OrderController {
     /*   提交订单   */
     @PostMapping("/submit")
     @Operation(summary = "提交订单")
+    @SentinelResource(value = "submit")  // 通常: 资源名 = 接口名/方法名   (也可以随便起,只要这里的资源名和SentinelRuleConfig中规则配置的资源名保持一致即可)
     public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO ordersSubmitDTO){
         log.info("用户提交订单:{}", ordersSubmitDTO);
         /* 这里调用service方法时,我加入RabbitMQ进去(生产者发消息) */
@@ -37,6 +39,7 @@ public class OrderController {
     /*   订单支付   */
     @PutMapping("/payment")
     @Operation(summary = "订单支付")
+    @SentinelResource(value = "payment")   // blockHandler的限流/降级兜底方法、fallback的业务异常兜底方法暂时先不写,因为写了Sentinel全局异常处理器 + MVC的@ExceptionHandler处理方法,所以先不写这两兜底方法,先保证Sentinel起效
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         log.info("订单支付：{}", ordersPaymentDTO);
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);

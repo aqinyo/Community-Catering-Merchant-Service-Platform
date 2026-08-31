@@ -1,5 +1,6 @@
 package com.aqinyo.controller.user;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.aqinyo.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,7 @@ public class ShopController {
     /*   查询 店铺的营业状态   */
     @GetMapping("/status")
     @Operation(summary = "查询店铺的营业状态")
+    @SentinelResource(value = "getStatus")
     public Result<Integer> getStatus(){
         Integer status = (Integer) redisTemplate.opsForValue().get(KEY); // Spring Data Redis手动式 缓存至 Redis
         log.info("获取店铺的营业状态：{}", status == 1 ? "营业中" : "打烊中");

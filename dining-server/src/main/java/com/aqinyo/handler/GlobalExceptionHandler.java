@@ -1,5 +1,6 @@
 package com.aqinyo.handler;
 
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.aqinyo.constant.MessageConstant;
 import com.aqinyo.exception.BaseException;
 import com.aqinyo.result.Result;
@@ -12,7 +13,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 /*
  *   全局异常处理器: 拦截项目中所有 "Controller层(即Web层)" 抛出的异常,统一处理后(统一序列化为JSON格式)返回友好的错误信息给前端 / 即return Result.error("xxx"),避免直接暴露堆栈信息
 */
-@RestControllerAdvice // 基于该注解实现全局异常处理。该注解相当于 @ControllerAdvice + @ResponseBody
+@RestControllerAdvice // 基于该注解实现全局异常处理。该注解相当于 @ControllerAdvice + @ResponseBody (是SpringMVC原生注解,执行层级也是Controller层)
 @Slf4j
 public class GlobalExceptionHandler {
 
@@ -35,6 +36,14 @@ public class GlobalExceptionHandler {
         }else{
             return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
+    }
+
+
+    /*   处理 Sentinel 异常走 MVC 的异常处理机制  (作为Sentinel全局异常处理的补充: Sentinel拦截外层, MVC拦截内层)  */
+    @ExceptionHandler(BlockException.class) // 专门接住FlowException 和 DegradeException
+    public Result handleBlockException(BlockException e) {
+        return Result.error(MessageConstant.SENTINEL_GLOBAL_ERROR); // 调用Result.error()方法返回统一格式(友好的错误信息)
+        // 注: 目前的处理方式是把所有类型的Sentinel异常（限流、熔断等）都统一返回 "系统繁忙",后续再根据业务进行细分返回
     }
 
 }

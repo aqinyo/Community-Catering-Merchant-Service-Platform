@@ -1,5 +1,6 @@
 package com.aqinyo.controller.user;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.aqinyo.constant.StatusConstant;
 import com.aqinyo.entity.Setmeal;
 import com.aqinyo.result.Result;
@@ -29,6 +30,7 @@ public class SetmealController {
     @GetMapping("/list")                                            /*   注意:一般这个缓存注解写在service层的,这里偷懒写在controller层   */
     @Cacheable(cacheNames = "SetMeal", key = "#categoryId") //如果形参是user,则key写成#user.id     (最终效果是-->SetMeal::categoryId的值)
     @Operation(summary = "根据分类id查询套餐")                         //注: 注解式缓存是不依赖注入RedisTemplate的噢！依赖的是Spring底层提供的CacheManager缓存管理器
+    @SentinelResource(value = "conditionList")
     public Result<List<Setmeal>> list(Long categoryId) {
         Setmeal setmeal = new Setmeal();
         setmeal.setCategoryId(categoryId);
@@ -41,6 +43,7 @@ public class SetmealController {
     /*   根据套餐id查询包含的菜品   */
     @GetMapping("/dish/{id}")
     @Operation(summary = "根据套餐id查询包含的菜品列表")
+    @SentinelResource(value = "setMealDishList")
     public Result<List<DishItemVO>> dishList(@PathVariable("id") Long id) {
         List<DishItemVO> list = setmealService.getDishItemById(id);
         return Result.success(list);

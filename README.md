@@ -23,6 +23,7 @@
 - 接口文档: SpringDoc 1.7.0  +  Knife4j 3.0.3
 - 定时任务: Spring Task  (若定时任务多，就引入XXL-JOB中间件)
 - 监控: Actuator 
+- 限流/降级: Sentinel
 
 ### 本地开发-运行环境
 - 操作系统: Windows 10
@@ -61,6 +62,7 @@
 8. 基于JUnit5 + Mockito框架，对7个核心ServiceImpl编写76个单元测试用例，覆盖正常流程、各类边界与异常场景
 9. 基于 Knife4j + Swagger2 自动生成接口文档（Controller 层: @Api + @ApiOperation 、 DTO类/VO类的EmployeeLoginDTO/EmployeeLoginVO: @ApiModel + @ApiModelProperty）
 10. 基于 Actuator 监控项目运行状态（健康检查、环境变量、指标、线程转储等），负责暴露监控端点（/actuator/），能为compose的healthcheck提供监控数据，同时为后续可视化监控提供数据接口（云监控/P+G）
+11. 引入 Sentinel 对核心接口进行限流/降级保护，保护系统在高并发场景下的稳定运行，避免服务雪崩
 
 #### 注意事项
 1. 项目启动前记得检查Linux防火墙是否有放行中间件端口，如RabbitMQ的5672端口、Redis的6379端口等（docker重启后很容易规则冲突不放行的）
@@ -82,11 +84,11 @@
 用户端 C端: （8个接口）
 
     微信登录
-    查询菜品        （根据"分类id"查询）    --> 引入Redis （Spring Data Redis 手动式）【做了缓存预热】
-    查询套餐                               --> 引入Redis （Spring Cache 注解式）   【做了缓存预热】
-    查询分类
-    查询店铺状态                           --> 缓存至Redis （Spring Data Redis 手动式）
+    查询菜品        （根据"分类id"查询）    --> 引入Redis （Spring Data Redis 手动式）【做了缓存预热】   --> 引入Sentinel（加 流控(QPS) 规则）
+    查询套餐                               --> 引入Redis （Spring Cache 注解式）   【做了缓存预热】     --> 引入Sentinel（加 流控(QPS) 规则）
+    查询分类                               --> 引入Redis （Spring Cache 注解式）   【做了缓存预热】     --> 引入Sentinel（加 流控(QPS) 规则）
+    查询店铺状态                           --> 缓存至Redis （Spring Data Redis 手动式）                --> 引入Sentinel（加 流控(QPS) 规则）
     管理购物车      （增删查、清空购物车）
-    管理订单        （提交订单、订单支付、查询历史订单、再来一单、订单详情、取消订单）   --> 引入RabbitMQ
+    管理订单        （提交订单、订单支付、查询历史订单、再来一单、订单详情、取消订单）   --> 引入RabbitMQ   --> 引入Sentinel（对"提交订单、订单支付"接口 加 "流控(线程数隔离) + 降级(异常比例)" 规则）
     管理地址        （增删改查、设置默认）
 
