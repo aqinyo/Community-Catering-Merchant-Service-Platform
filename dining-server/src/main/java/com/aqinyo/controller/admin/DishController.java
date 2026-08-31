@@ -44,11 +44,13 @@ public class DishController {
     public Result<String> add(@RequestBody DishDTO dishDTO){    // 依旧是 DTO类 接收前端请求发来的数据 (入参的是json数据，则用@RequestBody给形参加上)
         log.info("新增菜品：{}", dishDTO);
 
+        // 先更新数据库, 再删除Redis缓存 (采用最终一致性方案)
+        dishservice.addDishWithFlavor(dishDTO);
+
         // 精准删除 Redis旧的缓存数据
         String key = "Dish_categoryId=" + dishDTO.getCategoryId(); // key通过接收前端传数据过来的DTO类中,去get里面的分类id(然后用于下面的删除Redis缓存)
         CleanRedis(key);  // 删除Redis里面的缓存 (每次新增都是要执行)
 
-        dishservice.addDishWithFlavor(dishDTO);
         return Result.success();
     }
 
@@ -68,10 +70,12 @@ public class DishController {
                                                   (即接口约定了id放在URL Query上接收,比如: /dish?ids=1&ids=2...) 所以用@RequestParam 而没用 @RequestBody */
         log.info("菜品批量删除：{}", ids);
 
+        // 先删除数据库中的数据, 再删除Redis缓存
+        dishservice.deleteBatch(ids);
+
         // 删除redis中全部缓存的菜品数据
         CleanRedis("Dish_*");
 
-        dishservice.deleteBatch(ids);
         return Result.success();
     }
 
@@ -98,11 +102,9 @@ public class DishController {
     @Operation(summary = "修改菜品")
     public Result<String> update(@RequestBody DishDTO dishDTO){
         log.info("修改菜品：{}", dishDTO);
-
+        dishservice.updateDishWithFlavor(dishDTO);
         // 删除redis中全部缓存的菜品数据
         CleanRedis("Dish_*");
-
-        dishservice.updateDishWithFlavor(dishDTO);
         return Result.success();
     }
 
@@ -111,11 +113,9 @@ public class DishController {
     @Operation(summary = "启用或禁用菜品")
     public Result<String> startOrStop(@PathVariable("status") int status, Long id){
         log.info("启用或禁用菜品：{}, {}",status, id);
-
+        dishservice.startOrStop(status, id);
         // 删除redis中全部缓存的菜品数据
         CleanRedis("Dish_*");
-        
-        dishservice.startOrStop(status, id);
         return Result.success();
     }
 
