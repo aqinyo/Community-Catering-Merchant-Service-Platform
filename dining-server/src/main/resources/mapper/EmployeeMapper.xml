@@ -21,7 +21,7 @@
     </update>
 
     <select id="pageQuery" resultType="com.aqinyo.entity.Employee">
-        select * from mall_takeout.employee
+        select * from employee
         <where>
             <if test="name != null and name != ''">
                 and name like concat('%',#{name},'%')

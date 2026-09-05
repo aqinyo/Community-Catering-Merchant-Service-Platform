@@ -5,7 +5,7 @@
 <mapper namespace="com.aqinyo.mapper.UserMapper">
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into mall_takeout.user (openid, name, phone, sex, id_number, avatar, create_time) values (#{openid}, #{name}, #{phone}, #{sex}, #{idNumber}, #{avatar}, #{createTime})
+        insert into user (openid, name, phone, sex, id_number, avatar, create_time) values (#{openid}, #{name}, #{phone}, #{sex}, #{idNumber}, #{avatar}, #{createTime})
     </insert>
 
     <select id="countByMap" resultType="java.lang.Integer">

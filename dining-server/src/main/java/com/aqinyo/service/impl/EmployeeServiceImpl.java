@@ -15,6 +15,7 @@ import com.aqinyo.exception.PasswordErrorException;
 import com.aqinyo.mapper.EmployeeMapper;
 import com.aqinyo.result.PageResult;
 import com.aqinyo.service.EmployeeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /*  登录  */
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {  /*  对于Service层实现业务逻辑: 可以先把先做什么后做什么的流程分点写好,然后再动手编码 */
+
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
 
@@ -45,10 +47,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         //密码比对
-        /*  对前端传过来的明文密码进行 MD5 加密,然后再与数据库的密文密码进行比对   (现在仅仅为了验证是否能前后端联调才暂时注释而已,数据库加上密文后可放开)  */
+        /*  下面这行代码是对前端传过来的明文密码进行 MD5 加密,然后再与数据库的密文密码进行比对  */
         password = DigestUtils.md5DigestAsHex(password.getBytes());
 
-        if (!password.equals(employee.getPassword())) {
+        if (!password.equals(employee.getPassword())) {     // 加密后的密码 ！= 数据库中的密码
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }

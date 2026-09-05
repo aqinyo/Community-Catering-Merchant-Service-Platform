@@ -114,6 +114,7 @@
                 <version>${aspectj}</version>
             </dependency>
 
+            <!-- 引入jjwt依赖，是用来生成JWT token的 -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>

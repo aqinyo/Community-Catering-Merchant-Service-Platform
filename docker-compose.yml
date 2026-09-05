@@ -20,7 +20,7 @@ services:     # 这里是 "容器运行参数" 配置文件  (注: 配置的先�
 
     # 外部配置【绑定挂载】: 把Linux服务器当前目录"新建"的./config/application-pro.yml生产环境配置文件 ---挂载到--> 容器内部的 /app/config/application-pro.yml 路径下 (好处:可以在外部修改SpringBoot的配置,而不需要重新打包成镜像,仅需重启容器即可生效)
     volumes:
-      - ./config/application-pro.yml:/app/config/application-pro.yml
+      - ./config/application-pro.yml:/app/config/application-pro.yml  # 优先级：外部挂载的配置文件 > jar包内的 主yml 配置文件 (因此得把原本jar包内有而pro.yml没有的所有配置全都写到pro.yml中,然后pro.yml就是生产环境唯一的"配置文件"了)
     # 只要是外部配置【绑定挂载】,在生产规范上:都必须把要挂载的配置文件,提前在Linux服务器手动"新建"好,且目录结构也要和compose这里定义的路径一致 (下面nginx的挂载同理)
 
 
@@ -77,11 +77,12 @@ services:     # 这里是 "容器运行参数" 配置文件  (注: 配置的先�
     depends_on:                       # 启动顺序依赖: 先启动app容器,再启动nginx容器 (与app不同,nginx不用依赖redis和rabbitmq)
       - app
     restart: always
-    # 外部配置【绑定挂载】: 把Linux服务器当前目录"新建"的./nginx/conf.d 等配置目录 ---挂载到--> 容器内部的 /etc/nginx/conf.d 路径下 (下面的挂载也是同理)
+    # 外部配置【绑定挂载】: 把左边 "Linux服务器"当前目录"新建"的./nginx/conf.d 等配置目录 ---挂载到--> 右边 "容器内部"的 /etc/nginx/conf.d 路径下 (下面的挂载也是同理)
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d   # nginx站点配置,挂载 server块 子配置目录
-      - ./nginx/cert:/etc/nginx/cert       # SSL证书目录 (只读)
-      - ./nginx/logs:/var/log/nginx        # 日志目录
+      - ./nginx/cert:/etc/nginx/cert       # SSL证书目录    (只读)
+      - ./nginx/logs:/var/log/nginx        # 日志目录       (开头带.是指当前目录,是相对路径 ;  开头不带.带/是指根目录,是绝对路径)
+      - /var/www/vue3:/var/www/vue3        # 前端项目目录    (新增的,是自定义路径,根据实际情况修改 / 这样我的 nginx 里配置的 root /var/www/vue3; 就可以正常找到前端文件)
     # 只要是外部配置【绑定挂载】,在生产规范上:都必须把要挂载的配置文件,提前在Linux服务器手动"新建"好,且目录结构也要和compose这里定义的路径一致
 
 
